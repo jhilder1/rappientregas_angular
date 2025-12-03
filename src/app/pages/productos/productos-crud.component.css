@@ -1,0 +1,126 @@
+.page-container {
+  padding: 2rem;
+  min-height: 100vh;
+  background: transparent;
+  padding-top: 90px;
+  animation: fadeIn 0.6s ease-out;
+}
+
+mat-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  margin-bottom: 2rem;
+  transition: all 0.3s ease;
+}
+
+mat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  border-color: rgba(102, 126, 234, 0.5);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.header h2 {
+  margin: 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 800;
+  font-size: 2rem;
+}
+
+.form-container {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 2rem;
+  border-radius: 16px;
+  margin-bottom: 2rem;
+  transition: all 0.3s ease;
+}
+
+.form-container:hover {
+  border-color: rgba(102, 126, 234, 0.3);
+}
+
+.form-container h3 {
+  margin-top: 0;
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+form {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.form-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 1rem;
+}
+
+.table-container {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  background: transparent;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+th {
+  color: #fff;
+  font-weight: 700;
+  background: rgba(102, 126, 234, 0.2);
+  padding: 1rem;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+}
+
+td {
+  color: var(--text-secondary);
+  padding: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+tr:hover {
+  background: rgba(102, 126, 234, 0.1);
+  transition: background 0.3s ease;
+}
+
+::ng-deep .mat-mdc-form-field {
+  --mdc-filled-text-field-container-color: #2a2a2a;
+  --mdc-outlined-text-field-container-color: #2a2a2a;
+}
+
+::ng-deep .mat-mdc-text-field-wrapper {
+  background-color: #2a2a2a !important;
+}
+
+::ng-deep .mat-mdc-form-field-input-control {
+  color: #fff !important;
+}
+
+
+

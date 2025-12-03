@@ -1,0 +1,50 @@
+.page-container {
+  padding: 2rem;
+  min-height: 100vh;
+  background-color: #121212;
+  padding-top: 80px;
+  color: #fff;
+}
+
+h1 {
+  margin-bottom: 2rem;
+  color: #fff;
+}
+
+.charts-section {
+  margin-bottom: 3rem;
+}
+
+.charts-section h2 {
+  margin-bottom: 1.5rem;
+  color: #fff;
+  font-size: 1.5rem;
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 2rem;
+}
+
+.chart-card {
+  background-color: #1e1e1e;
+  color: #fff;
+  padding: 1.5rem;
+}
+
+.chart-card h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #fff;
+  font-size: 1.2rem;
+}
+
+@media (max-width: 768px) {
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+

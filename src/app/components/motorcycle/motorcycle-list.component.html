@@ -1,0 +1,26 @@
+<div class="motorcycle-list-container">
+  <h3 class="list-title">Lista de Motos</h3>
+  <div class="motorcycles-grid">
+    <mat-card *ngFor="let moto of motorcycles" class="motorcycle-card">
+      <mat-card-content>
+        <div class="motorcycle-header">
+          <h4 class="plate">{{ moto.license_plate || moto.plate }}</h4>
+          <mat-chip [style.background-color]="getStatusColor(moto.status || 'available')" class="status-chip">
+            {{ getStatusLabel(moto.status || 'available') }}
+          </mat-chip>
+        </div>
+        <p class="brand">{{ moto.brand }}</p>
+        <p class="year">Año: {{ moto.year }}</p>
+        <div class="card-actions">
+          <button mat-icon-button (click)="onEdit(moto)" color="primary" title="Editar">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button (click)="onAssignZone(moto)" color="accent" title="Asignar zona">
+            <mat-icon>location_on</mat-icon>
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
+

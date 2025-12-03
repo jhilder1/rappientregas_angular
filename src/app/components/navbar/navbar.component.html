@@ -1,0 +1,75 @@
+<nav class="navbar" *ngIf="shouldShowNavbar()">
+  <div class="navbar-container" style="justify-content: center;">
+    <div class="navbar-logo">
+      <mat-icon style="margin-right: 8px; color: #4caf50;">store</mat-icon>
+      Entregas Rápidas
+    </div>
+
+    <button class="navbar-toggle" (click)="toggleMenu()">
+      <mat-icon>{{ open ? 'close' : 'menu' }}</mat-icon>
+    </button>
+
+    <ul class="navbar-links" [class.open]="open" style="align-items: center; flex: 1;">
+      <!-- Conductores -->
+      <li class="navbar-dropdown">
+        <button class="navbar-dropdown-btn" (click)="toggleConductores()">
+          Conductores <mat-icon style="margin-left: 4px;">keyboard_arrow_down</mat-icon>
+        </button>
+        <ul class="navbar-dropdown-menu" [class.show]="openConductores">
+          <li><a routerLink="/conductores" [class.active]="currentPath === '/conductores'" (click)="closeMenus()">Conductores</a></li>
+          <li><a routerLink="/motos" [class.active]="currentPath === '/motos'" (click)="closeMenus()">Vehículos</a></li>
+          <li><a routerLink="/turnos" [class.active]="currentPath === '/turnos'" (click)="closeMenus()">Jornadas</a></li>
+          <li><a routerLink="/incovenientes" [class.active]="currentPath === '/incovenientes'" (click)="closeMenus()">Problemas</a></li>
+          <li><a routerLink="/fotos" [class.active]="currentPath === '/fotos'" (click)="closeMenus()">Evidencias</a></li>
+        </ul>
+      </li>
+
+      <!-- Administración -->
+      <li class="navbar-dropdown">
+        <button class="navbar-dropdown-btn" (click)="toggleAdmin()">
+          Administración <mat-icon style="margin-left: 4px;">keyboard_arrow_down</mat-icon>
+        </button>
+        <ul class="navbar-dropdown-menu" [class.show]="openAdmin">
+          <li><a routerLink="/clientes" [class.active]="currentPath === '/clientes'" (click)="closeMenus()">Usuarios</a></li>
+          <li><a routerLink="/ordenes" [class.active]="currentPath === '/ordenes'" (click)="closeMenus()">Órdenes</a></li>
+          <li><a routerLink="/direcciones" [class.active]="currentPath === '/direcciones'" (click)="closeMenus()">Ubicaciones</a></li>
+          <li><a routerLink="/graficos" [class.active]="currentPath === '/graficos'" (click)="closeMenus()">Estadísticas</a></li>
+        </ul>
+      </li>
+
+      <!-- Locales -->
+      <li class="navbar-dropdown">
+        <button class="navbar-dropdown-btn" (click)="toggleLocales()">
+          Locales <mat-icon style="margin-left: 4px;">keyboard_arrow_down</mat-icon>
+        </button>
+        <ul class="navbar-dropdown-menu" [class.show]="openLocales">
+          <li><a routerLink="/restaurantes" [class.active]="currentPath === '/restaurantes'" (click)="closeMenus()">Comercios</a></li>
+          <li><a routerLink="/menus" [class.active]="currentPath === '/menus'" (click)="closeMenus()">Platos</a></li>
+          <li><a routerLink="/productos" [class.active]="currentPath === '/productos'" (click)="closeMenus()">Artículos</a></li>
+        </ul>
+      </li>
+
+      <!-- Asistente -->
+      <li style="display: flex; align-items: center;">
+        <a routerLink="/chat" [class.active]="currentPath === '/chat'" (click)="closeMenus()" style="display: flex; align-items: center; gap: 0.5rem;">
+          <mat-icon>smart_toy</mat-icon>
+          <span style="font-weight: 600; color: #fff;">Asistente</span>
+        </a>
+      </li>
+    </ul>
+
+    <!-- Notificaciones y Logout -->
+    <div style="display: flex; align-items: center; margin-left: auto;">
+      <app-notification-bell style="margin-right: 1rem;"></app-notification-bell>
+      <ng-container *ngIf="customer$ | async as customer">
+        <div class="avatar" [style.background-image]="customer.photo ? 'url(' + customer.photo + ')' : 'none'" [style.backgroundColor]="!customer.photo ? '#4caf50' : 'transparent'">
+          {{ (!customer.photo && customer.name) ? customer.name[0].toUpperCase() : '' }}
+        </div>
+      </ng-container>
+      <button class="navbar-dropdown-btn" (click)="handleLogout()" title="Cerrar sesión" style="background: none; border: none; padding: 0; color: #fff; cursor: pointer; display: flex; align-items: center;">
+        <mat-icon>logout</mat-icon>
+      </button>
+    </div>
+  </div>
+</nav>
+

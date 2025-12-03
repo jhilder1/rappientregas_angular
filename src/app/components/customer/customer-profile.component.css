@@ -1,0 +1,88 @@
+.profile-card {
+  padding: 2rem;
+  margin-bottom: 2rem;
+  background-color: #1e1e2f;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(100, 50, 150, 0.6);
+  color: #eee;
+}
+
+.profile-title {
+  color: #bb86fc;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.edit-button {
+  color: #bb86fc;
+}
+
+.avatar-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.avatar-image {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  border: 3px solid #bb86fc;
+  box-shadow: 0 0 10px #bb86fc;
+  object-fit: cover;
+}
+
+.avatar-placeholder {
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  border: 3px solid #bb86fc;
+  box-shadow: 0 0 10px #bb86fc;
+  background-color: #6a1b9a;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 36px;
+  font-weight: bold;
+}
+
+.full-width {
+  width: 100%;
+  max-width: 500px;
+  margin-bottom: 1rem;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.loading-message {
+  color: #ddd;
+  text-align: center;
+  padding: 2rem;
+  background-color: #121212;
+}
+
+::ng-deep .mat-mdc-form-field {
+  --mdc-filled-text-field-container-color: #2a2a3d;
+  --mdc-filled-text-field-label-text-color: #bb86fc;
+  --mdc-filled-text-field-input-text-color: #eee;
+}
+
+::ng-deep .mat-mdc-form-field .mat-mdc-text-field-wrapper.mdc-text-field--disabled {
+  background-color: #2a2a3d;
+}
+
+::ng-deep .mat-mdc-input-element:disabled {
+  color: #ccc;
+}
+

@@ -1,0 +1,44 @@
+<button mat-icon-button (click)="openMenu($event)" [matMenuTriggerFor]="menu">
+  <mat-icon [matBadge]="(notifications$ | async)?.length || 0" matBadgeColor="warn">notifications</mat-icon>
+</button>
+
+<mat-menu #menu="matMenu" class="notification-menu">
+  <ng-container *ngIf="(notifications$ | async)?.length === 0; else notificationsList">
+    <button mat-menu-item disabled>
+      <span>No hay notificaciones</span>
+    </button>
+  </ng-container>
+
+  <ng-template #notificationsList>
+    <mat-list dense>
+      <mat-list-item *ngFor="let notification of notifications$ | async; let i = index">
+        <mat-icon matListItemAvatar [style.color]="getStatusColor(notification.estado || 'Pendiente')">
+          {{ getStatusIcon(notification.estado || 'Pendiente') }}
+        </mat-icon>
+        <div matListItemTitle>{{ getNotificationType(notification) }}</div>
+        <div matListItemLine>Cliente: {{ notification.cliente || 'N/A' }}</div>
+        <div matListItemLine [style.color]="getStatusColor(notification.estado || 'Pendiente')">
+          Estado: {{ notification.estado || 'Pendiente' }}
+        </div>
+        <div matListItemLine *ngIf="notification.fecha" class="notification-date">
+          {{ notification.fecha }}
+        </div>
+        <button 
+          *ngIf="notification.license_plate" 
+          mat-button 
+          color="primary" 
+          (click)="navigateToMap(notification.license_plate)"
+          class="map-button">
+          <mat-icon>map</mat-icon>
+          Mapa
+        </button>
+        <mat-divider *ngIf="i < ((notifications$ | async)?.length || 0) - 1"></mat-divider>
+      </mat-list-item>
+    </mat-list>
+    <mat-divider></mat-divider>
+    <button mat-menu-item (click)="clearNotifications()" class="clear-button">
+      <span>Limpiar notificaciones</span>
+    </button>
+  </ng-template>
+</mat-menu>
+

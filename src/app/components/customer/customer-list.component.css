@@ -1,0 +1,80 @@
+.customer-list-container {
+  width: 100%;
+}
+
+.list-title {
+  text-align: center;
+  color: #4a0072;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+}
+
+.customers-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  align-items: center;
+}
+
+.customer-card {
+  width: 280px;
+  min-height: 140px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  background-color: #ede7f6;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.customer-card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+.customer-card.logged-user {
+  background-color: #d1c4e9;
+}
+
+.customer-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: #6a1b9a;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  font-size: 24px;
+  overflow: hidden;
+}
+
+.customer-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-initial {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.customer-name {
+  color: #4a0072;
+  font-weight: bold;
+  text-align: center;
+  margin: 0.5rem 0;
+}
+
+.customer-email {
+  color: #6a1b9a;
+  text-align: center;
+  margin: 0;
+  font-size: 0.875rem;
+}
+

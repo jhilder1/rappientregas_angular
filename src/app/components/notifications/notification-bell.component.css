@@ -1,0 +1,24 @@
+.notification-menu {
+  max-height: 350px;
+  width: 350px;
+}
+
+.notification-date {
+  font-size: 0.75rem;
+  color: #999;
+}
+
+.map-button {
+  margin-top: 0.5rem;
+  margin-left: -0.5rem;
+}
+
+.clear-button {
+  color: #f44336;
+  justify-content: center;
+}
+
+::ng-deep .mat-mdc-menu-panel {
+  max-height: 350px !important;
+}
+

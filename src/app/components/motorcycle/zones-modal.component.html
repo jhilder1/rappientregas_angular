@@ -1,0 +1,53 @@
+<div class="dialog-overlay" *ngIf="open" (click)="onClose()">
+  <div class="dialog-content" (click)="$event.stopPropagation()">
+    <h2 class="dialog-title">Asignar Zona</h2>
+    
+    <p *ngIf="moto">Moto: {{ moto.license_plate || moto.plate }}</p>
+
+    <form [formGroup]="zoneForm" (ngSubmit)="onSubmit()">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Departamento</mat-label>
+        <mat-select formControlName="selectedDepartment">
+          <mat-option *ngFor="let dept of departments" [value]="dept.name">
+            {{ dept.name }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="zoneForm.get('selectedDepartment')?.hasError('required')">
+          El departamento es obligatorio
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Fecha de asignación</mat-label>
+        <input matInput type="date" formControlName="date">
+        <mat-error *ngIf="zoneForm.get('date')?.hasError('required')">
+          La fecha es obligatoria
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Nombre del Conductor</mat-label>
+        <input matInput formControlName="driverName">
+        <mat-error *ngIf="zoneForm.get('driverName')?.hasError('required')">
+          El nombre del conductor es obligatorio
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Identificación del Conductor</mat-label>
+        <input matInput formControlName="driverId">
+        <mat-error *ngIf="zoneForm.get('driverId')?.hasError('required')">
+          La identificación es obligatoria
+        </mat-error>
+      </mat-form-field>
+
+      <div class="dialog-actions">
+        <button mat-button type="button" (click)="onClose()" color="warn">Cancelar</button>
+        <button mat-raised-button type="submit" color="primary" [disabled]="!zoneForm.valid">
+          Guardar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+

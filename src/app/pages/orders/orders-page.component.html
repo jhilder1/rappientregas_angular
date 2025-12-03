@@ -1,0 +1,147 @@
+<div class="page-container">
+  <mat-card>
+    <div class="header">
+      <h2>Órdenes</h2>
+      <button mat-raised-button color="primary" (click)="handleAdd()">
+        <mat-icon>add</mat-icon>
+        Nueva Orden
+      </button>
+    </div>
+
+    <div *ngIf="formOpen" class="form-container">
+      <h3>{{ editingOrder ? 'Editar' : 'Nueva' }} Orden</h3>
+      <form [formGroup]="orderForm" (ngSubmit)="handleSubmit()">
+        <mat-form-field appearance="outline">
+          <mat-label>Cliente</mat-label>
+          <mat-select formControlName="customer_id" required>
+            <mat-option *ngFor="let customer of customers" [value]="customer.id">
+              {{ customer.name }} - {{ customer.email }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="orderForm.get('customer_id')?.hasError('required')">
+            El cliente es requerido
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Dirección</mat-label>
+          <mat-select formControlName="address_id" required>
+            <mat-option *ngFor="let address of addresses" [value]="address.id">
+              {{ address.street }}, {{ address.city }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="orderForm.get('address_id')?.hasError('required')">
+            La dirección es requerida
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Motocicleta</mat-label>
+          <mat-select formControlName="motorcycle_id">
+            <mat-option value="">Sin asignar</mat-option>
+            <mat-option *ngFor="let motorcycle of motorcycles" [value]="motorcycle.id">
+              {{ motorcycle.plate }} - {{ motorcycle.brand }} {{ motorcycle.model }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Estado</mat-label>
+          <mat-select formControlName="status" required>
+            <mat-option value="pendiente">Pendiente</mat-option>
+            <mat-option value="en_preparacion">En Preparación</mat-option>
+            <mat-option value="en_camino">En Camino</mat-option>
+            <mat-option value="entregado">Entregado</mat-option>
+            <mat-option value="cancelado">Cancelado</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Total</mat-label>
+          <input matInput type="number" formControlName="total" required>
+          <mat-error *ngIf="orderForm.get('total')?.hasError('required')">
+            El total es requerido
+          </mat-error>
+          <mat-error *ngIf="orderForm.get('total')?.hasError('min')">
+            El total debe ser mayor o igual a 0
+          </mat-error>
+        </mat-form-field>
+
+        <div class="form-actions">
+          <button mat-button type="button" (click)="handleClose()">Cancelar</button>
+          <button mat-raised-button color="primary" type="submit" [disabled]="orderForm.invalid">
+            {{ editingOrder ? 'Actualizar' : 'Crear' }}
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <div class="table-container">
+      <table mat-table [dataSource]="orders" class="mat-elevation-z2">
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef>ID</th>
+          <td mat-cell *matCellDef="let order">#{{ order.id?.substring(0, 8) }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="customer">
+          <th mat-header-cell *matHeaderCellDef>Cliente</th>
+          <td mat-cell *matCellDef="let order">
+            {{ order.customer?.name || order.customer_id }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Estado</th>
+          <td mat-cell *matCellDef="let order">
+            <mat-chip [style.background-color]="getStatusColor(order.status)">
+              {{ order.status }}
+            </mat-chip>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="total">
+          <th mat-header-cell *matHeaderCellDef>Total</th>
+          <td mat-cell *matCellDef="let order">${{ order.total | number:'1.2-2' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="motorcycle">
+          <th mat-header-cell *matHeaderCellDef>Motocicleta</th>
+          <td mat-cell *matCellDef="let order">
+            <span *ngIf="order.motorcycle?.plate; else noMotorcycle">
+              {{ order.motorcycle.plate }}
+              <button mat-icon-button (click)="viewMap(order.motorcycle.plate)">
+                <mat-icon>map</mat-icon>
+              </button>
+            </span>
+            <ng-template #noMotorcycle>-</ng-template>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef>Acciones</th>
+          <td mat-cell *matCellDef="let order">
+            <button mat-icon-button color="primary" (click)="handleEdit(order)">
+              <mat-icon>edit</mat-icon>
+            </button>
+            <button 
+              mat-icon-button 
+              color="accent" 
+              (click)="handleAssign(order)"
+              *ngIf="order.motorcycle_id && order.status === 'pendiente'">
+              <mat-icon>assignment</mat-icon>
+            </button>
+            <button mat-icon-button color="warn" (click)="handleDelete(order.id!)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    </div>
+  </mat-card>
+</div>
+
+
+

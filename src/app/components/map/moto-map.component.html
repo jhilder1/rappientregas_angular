@@ -1,0 +1,23 @@
+<div class="page-container">
+  <mat-card>
+    <div class="header">
+      <h2>Mapa de Motocicleta</h2>
+      <div class="plate-info">
+        <mat-icon>two_wheeler</mat-icon>
+        <span>Placa: {{ plate }}</span>
+      </div>
+    </div>
+    
+    <div class="map-container">
+      <div #mapContainer class="map"></div>
+    </div>
+
+    <div class="info-panel">
+      <p>La ubicación se actualiza automáticamente cada 5 segundos.</p>
+      <p class="note">Nota: Para usar este mapa, necesitas configurar tu API Key de Google Maps en el componente.</p>
+    </div>
+  </mat-card>
+</div>
+
+
+

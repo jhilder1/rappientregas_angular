@@ -1,0 +1,61 @@
+<div class="page-container">
+  <mat-card class="chat-card">
+    <h2 class="chat-title">GustoBot</h2>
+
+    <div class="cat-avatar">
+      <div class="cat-eyes">
+        <div class="cat-eye"><div class="pupil"></div></div>
+        <div class="cat-eye"><div class="pupil"></div></div>
+      </div>
+      <div id="cat-mouth"></div>
+    </div>
+
+    <div class="messages-container">
+      <div *ngIf="messages.length === 0" class="empty-message">
+        ¡Hola! ¿En qué puedo ayudarte hoy?
+      </div>
+      <div *ngFor="let message of messages" class="message" [class.user-message]="message.isUser">
+        <div class="message-content">
+          <p>{{ message.text }}</p>
+        </div>
+      </div>
+      <div *ngIf="isLoading" class="loading-container">
+        <mat-spinner diameter="24"></mat-spinner>
+      </div>
+    </div>
+
+    <div class="input-container">
+      <mat-form-field appearance="outline" class="message-input">
+        <mat-label>Escribe tu mensaje...</mat-label>
+        <input 
+          matInput 
+          [(ngModel)]="currentMessage" 
+          (keypress)="onKeyPress($event)"
+          [disabled]="isLoading">
+      </mat-form-field>
+      <button 
+        mat-raised-button 
+        color="primary" 
+        (click)="sendMessage()"
+        [disabled]="!currentMessage.trim() || isLoading">
+        Hablar
+      </button>
+      <button 
+        mat-stroked-button 
+        color="accent"
+        (click)="stopSpeech()">
+        Detener
+      </button>
+    </div>
+
+    <mat-form-field appearance="outline" class="voice-select">
+      <mat-label>Selecciona una voz</mat-label>
+      <mat-select [(ngModel)]="selectedVoice">
+        <mat-option value="">Predeterminada</mat-option>
+        <mat-option *ngFor="let voice of voices" [value]="voice.name">
+          {{ voice.name }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </mat-card>
+</div>

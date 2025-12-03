@@ -1,0 +1,65 @@
+<mat-card class="profile-card" *ngIf="user">
+  <h3 class="profile-title">
+    Perfil de Usuario
+    <button mat-icon-button *ngIf="!editMode" (click)="toggleEditMode()" class="edit-button">
+      <mat-icon>edit</mat-icon>
+    </button>
+  </h3>
+
+  <div class="avatar-container">
+    <img *ngIf="user.photo" [src]="user.photo" [alt]="user.name" class="avatar-image">
+    <div *ngIf="!user.photo" class="avatar-placeholder">
+      {{ (user.name?.charAt(0) || '?').toUpperCase() }}
+    </div>
+  </div>
+
+  <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" *ngIf="editMode; else viewMode">
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Nombre</mat-label>
+      <input matInput formControlName="name">
+      <mat-error *ngIf="profileForm.get('name')?.touched && nameError">{{ nameError }}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Correo</mat-label>
+      <input matInput [value]="user.email" disabled>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Teléfono</mat-label>
+      <input matInput formControlName="phone">
+      <mat-error *ngIf="profileForm.get('phone')?.touched && phoneError">{{ phoneError }}</mat-error>
+    </mat-form-field>
+
+    <div class="form-actions">
+      <button mat-icon-button type="submit" color="primary" [disabled]="!profileForm.valid">
+        <mat-icon>save</mat-icon>
+      </button>
+      <button mat-icon-button type="button" (click)="toggleEditMode()" color="warn">
+        <mat-icon>cancel</mat-icon>
+      </button>
+    </div>
+  </form>
+
+  <ng-template #viewMode>
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Nombre</mat-label>
+      <input matInput [value]="user.name" disabled>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Correo</mat-label>
+      <input matInput [value]="user.email" disabled>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="full-width">
+      <mat-label>Teléfono</mat-label>
+      <input matInput [value]="user.phone" disabled>
+    </mat-form-field>
+  </ng-template>
+</mat-card>
+
+<div *ngIf="!user" class="loading-message">
+  Cargando perfil...
+</div>
+

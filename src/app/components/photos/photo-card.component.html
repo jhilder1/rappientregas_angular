@@ -1,0 +1,17 @@
+<mat-card class="photo-card">
+  <img mat-card-image [src]="imageUrl" [alt]="photo.caption" class="photo-image">
+  <mat-card-content>
+    <h3 class="caption">{{ photo.caption }}</h3>
+    <p class="date">{{ formattedDate }}</p>
+  </mat-card-content>
+  <mat-card-actions class="actions">
+    <button mat-icon-button color="primary" (click)="onEdit()">
+      <mat-icon>edit</mat-icon>
+    </button>
+    <button mat-icon-button color="warn" (click)="onDelete()">
+      <mat-icon>delete</mat-icon>
+    </button>
+  </mat-card-actions>
+</mat-card>
+
+

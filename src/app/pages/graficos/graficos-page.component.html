@@ -1,0 +1,51 @@
+<div class="page-container">
+  <h1>Gráficos e Informes</h1>
+
+  <!-- Gráficos Circulares -->
+  <section class="charts-section">
+    <h2>Gráficos Circulares</h2>
+    <div class="charts-grid">
+      <mat-card *ngFor="let chart of pieCharts" class="chart-card">
+        <h3>{{ chart.title }}</h3>
+        <canvas baseChart
+          [data]="getPieChartData(chart)"
+          [type]="pieChartType"
+          [options]="pieChartOptions">
+        </canvas>
+      </mat-card>
+    </div>
+  </section>
+
+  <!-- Gráficos de Barras -->
+  <section class="charts-section">
+    <h2>Gráficos de Barras</h2>
+    <div class="charts-grid">
+      <mat-card *ngFor="let chart of barCharts" class="chart-card">
+        <h3>{{ chart.title }}</h3>
+        <canvas baseChart
+          [data]="getBarChartData(chart)"
+          [type]="barChartType"
+          [options]="barChartOptions">
+        </canvas>
+      </mat-card>
+    </div>
+  </section>
+
+  <!-- Gráficos de Series Temporales -->
+  <section class="charts-section">
+    <h2>Gráficos de Series Temporales</h2>
+    <div class="charts-grid">
+      <mat-card *ngFor="let chart of timeSeriesCharts" class="chart-card">
+        <h3>{{ chart.title }}</h3>
+        <canvas baseChart
+          [data]="getLineChartData(chart)"
+          [type]="lineChartType"
+          [options]="lineChartOptions">
+        </canvas>
+      </mat-card>
+    </div>
+  </section>
+</div>
+
+
+

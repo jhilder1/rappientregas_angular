@@ -1,0 +1,21 @@
+<div class="customer-list-container">
+  <h3 class="list-title">Lista de Clientes</h3>
+  <div class="customers-grid">
+    <mat-card 
+      *ngFor="let customer of customers" 
+      [class.logged-user]="isLoggedUser(customer.id)"
+      class="customer-card">
+      <mat-card-content>
+        <div class="customer-avatar">
+          <img *ngIf="customer.photo" [src]="customer.photo" [alt]="customer.name">
+          <span *ngIf="!customer.photo" class="avatar-initial">
+            {{ (customer.name?.charAt(0) || '?').toUpperCase() }}
+          </span>
+        </div>
+        <h4 class="customer-name">{{ customer.name }}</h4>
+        <p class="customer-email">{{ customer.email }}</p>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>
+

@@ -1,0 +1,45 @@
+<div class="dialog-overlay" *ngIf="open" (click)="onClose()">
+  <div class="dialog-content" (click)="$event.stopPropagation()">
+    <h2 class="dialog-title">{{ editingPhoto ? 'Editar Foto' : 'Subir Foto' }}</h2>
+    
+    <form [formGroup]="photoForm" (ngSubmit)="onSubmit()">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Issue ID</mat-label>
+        <input matInput type="number" formControlName="issue_id">
+        <mat-error *ngIf="photoForm.get('issue_id')?.touched && issueIdError">
+          {{ issueIdError }}
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Caption</mat-label>
+        <input matInput formControlName="caption">
+        <mat-error *ngIf="photoForm.get('caption')?.touched && captionError">
+          {{ captionError }}
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Fecha</mat-label>
+        <input matInput type="datetime-local" formControlName="taken_at">
+        <mat-error *ngIf="photoForm.get('taken_at')?.touched && takenAtError">
+          {{ takenAtError }}
+        </mat-error>
+      </mat-form-field>
+
+      <div class="file-input-container">
+        <input type="file" accept="image/*" (change)="onFileSelected($event)">
+        <p class="error-text" *ngIf="fileError && !editingPhoto">{{ fileError }}</p>
+      </div>
+
+      <div class="dialog-actions">
+        <button mat-button type="button" (click)="onClose()">Cancelar</button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="!photoForm.valid">
+          Guardar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+

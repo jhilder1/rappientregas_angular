@@ -1,0 +1,80 @@
+<div class="login-container">
+  <mat-card class="login-card">
+    <h1 class="title">Rappi Entregas</h1>
+    <h2 class="subtitle">{{ isRegistering ? 'Crear cuenta' : 'Iniciar sesión' }}</h2>
+    
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Correo electrónico</mat-label>
+        <input matInput type="email" formControlName="email" autocomplete="email">
+        <mat-error *ngIf="loginForm.get('email')?.hasError('required')">
+          El correo es obligatorio
+        </mat-error>
+        <mat-error *ngIf="loginForm.get('email')?.hasError('email')">
+          Correo electrónico inválido
+        </mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Contraseña</mat-label>
+        <input matInput type="password" formControlName="password" autocomplete="current-password">
+        <mat-error *ngIf="loginForm.get('password')?.hasError('required')">
+          La contraseña es obligatoria
+        </mat-error>
+        <mat-error *ngIf="loginForm.get('password')?.hasError('minlength')">
+          Mínimo 6 caracteres
+        </mat-error>
+      </mat-form-field>
+
+      <ng-container *ngIf="isRegistering">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Nombre</mat-label>
+          <input matInput type="text" formControlName="name">
+          <mat-error *ngIf="loginForm.get('name')?.hasError('required')">
+            El nombre es obligatorio
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Teléfono</mat-label>
+          <input matInput type="text" formControlName="phone">
+          <mat-error *ngIf="loginForm.get('phone')?.hasError('required')">
+            El número es obligatorio
+          </mat-error>
+        </mat-form-field>
+      </ng-container>
+
+      <button mat-raised-button color="primary" type="submit" class="submit-button" [disabled]="!loginForm.valid">
+        {{ isRegistering ? 'Crear cuenta' : 'Iniciar sesión' }}
+      </button>
+
+      <p class="toggle-text">
+        {{ isRegistering ? '¿Ya tienes cuenta?' : '¿No tienes una cuenta?' }}
+        <button mat-button type="button" (click)="toggleAuthMode()" class="toggle-button">
+          {{ isRegistering ? 'Iniciar sesión' : 'Registrarse' }}
+        </button>
+      </p>
+
+      <mat-divider class="divider">
+        <span>También puedes ingresar con</span>
+      </mat-divider>
+
+      <div class="social-buttons">
+        <button mat-raised-button type="button" (click)="handleGoogleLogin()" class="social-button google-button">
+          <mat-icon>account_circle</mat-icon>
+          Google
+        </button>
+        <button mat-raised-button type="button" (click)="handleGithubLogin()" class="social-button github-button">
+          <mat-icon>code</mat-icon>
+          Github
+        </button>
+        <button mat-raised-button type="button" (click)="handleMicrosoftLogin()" class="social-button microsoft-button">
+          <mat-icon>windows</mat-icon>
+          Microsoft
+        </button>
+      </div>
+    </form>
+  </mat-card>
+</div>
+
+

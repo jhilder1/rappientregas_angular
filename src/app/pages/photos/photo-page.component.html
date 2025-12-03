@@ -1,0 +1,31 @@
+<div class="photo-page-container">
+  <mat-card class="photo-card">
+    <mat-card-content>
+      <div class="header-section">
+        <h2 class="title">Galería de Fotos</h2>
+        <button mat-raised-button color="primary" (click)="handleAdd()">
+          <mat-icon>add_photo_alternate</mat-icon>
+          Agregar Foto
+        </button>
+      </div>
+
+      <mat-divider class="divider"></mat-divider>
+
+      <app-photo-list
+        [photos]="photos"
+        (delete)="handleDelete($event)"
+        (edit)="handleEdit($event)"
+        (add)="handleAdd()">
+      </app-photo-list>
+    </mat-card-content>
+  </mat-card>
+
+  <app-photo-form
+    [open]="formOpen"
+    [editingPhoto]="editingPhoto"
+    (close)="handleClose()"
+    (submit)="handleSubmit($event.data, $event.id)">
+  </app-photo-form>
+</div>
+
+
