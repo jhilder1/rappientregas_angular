@@ -9,54 +9,61 @@ const BACKEND_URL = 'http://127.0.0.1:5000';
 const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${API_KEY}`;
 
 const KNOWLEDGE = `
-🟢 Clientes:
-¡Claro! Para crear o editar un cliente en Flash Food, solo sigue estos pasos:
-1. Ve al panel de clientes desde el menú principal.
-2. Haz clic en el botón "Agregar cliente" o selecciona uno existente para editar.
-3. Ingresa: 🪪 Nombre, 📧 Correo, 📞 Teléfono, 📍 Dirección.
-4. Revisa que todo esté bien escrito y haz clic en Guardar.
+SISTEMA DE GESTIÓN DE ENTREGAS RÁPIDAS
 
-🟢 Pedidos:
-1. Ve a la sección de pedidos y haz clic en "Agregar pedido".
-2. Selecciona un cliente, productos o menús, conductor y dirección.
-3. Revisa y guarda.
+FUNCIONALIDADES PRINCIPALES:
 
-🟢 Restaurantes:
-1. Ve a la sección de restaurantes.
-2. Haz clic en "Agregar restaurante".
-3. Llena nombre, dirección y teléfono.
+1. GESTIÓN DE CLIENTES:
+   - Ver lista de todos los clientes en la sección "Usuarios"
+   - Editar cualquier cliente haciendo clic en el botón de editar en su tarjeta
+   - Editar tu propio perfil desde la sección de perfil
+   - Los campos editables son: nombre y teléfono
+   - El correo electrónico no se puede modificar
 
-🟢 Conductores:
-1. Entra a conductores.
-2. Haz clic en "Agregar conductor".
-3. Ingresa nombre, teléfono, licencia y moto asignada.
+2. GESTIÓN DE PEDIDOS:
+   - Crear pedidos desde la sección "Órdenes"
+   - Al crear un pedido debes seleccionar:
+     * Cliente: el usuario que realiza el pedido
+     * Menú/Artículo: selecciona un artículo del menú disponible
+     * Cantidad: número de unidades del artículo
+     * Motocicleta: opcional, para asignar un vehículo
+     * Estado: pending (pendiente), in_progress (en progreso), delivered (entregado), cancelled (cancelado)
+   - El sistema calcula automáticamente el precio total basado en el precio del menú y la cantidad
+   - Puedes editar y eliminar pedidos existentes
+   - Puedes asignar una motocicleta a un pedido pendiente
 
-🟢 Motos:
-1. Accede al panel de motos.
-2. Haz clic en "Agregar moto".
-3. Llena modelo, placa y año.
+3. GESTIÓN DE ARTÍCULOS Y MENÚS:
+   - Los artículos se crean en la sección "Artículos"
+   - Los menús se crean en la sección "Platos" y conectan un artículo con un restaurante
+   - Cada menú tiene un precio que puede ser diferente al precio del artículo
+   - Los pedidos se crean usando menús, no artículos directamente
 
-🟢 Turnos:
-1. Entra a turnos.
-2. Haz clic en "Agregar turno".
-3. Selecciona día, hora y conductor.
+4. GESTIÓN DE DIRECCIONES:
+   - Las direcciones se gestionan en la sección "Ubicaciones"
+   - Cada dirección debe estar asociada a un pedido
+   - Campos: calle, ciudad, estado, código postal, información adicional
 
-🟡 Inconvenientes:
-1. Ve a la sección de "Inconvenientes" en el panel lateral.
-2. Haz clic en "Agregar inconveniente".
-3. Selecciona el pedido relacionado y describe el problema.
-4. Guarda los cambios. El sistema notificará automáticamente al administrador.
+5. GESTIÓN DE RESTAURANTES:
+   - Ver y gestionar restaurantes en la sección "Comercios"
+   - Los restaurantes ofrecen menús que contienen artículos
 
-🟡 Fotos:
-1. Ve a la sección "Fotos".
-2. Haz clic en "Subir foto".
-3. Selecciona el pedido o entidad relacionada (como producto o conductor).
-4. Elige la imagen desde tu dispositivo y confirma.
+6. GESTIÓN DE CONDUCTORES Y VEHÍCULOS:
+   - Conductores: gestiona los repartidores en la sección "Conductores"
+   - Motocicletas: gestiona los vehículos en la sección "Vehículos"
+   - Turnos: gestiona las jornadas de trabajo en "Jornadas"
+   - Puedes ver la ubicación de una motocicleta en el mapa desde los pedidos
 
-🟡 Ver ubicación de moto:
-1. Entra a la sección "Pedidos".
-2. Busca el pedido deseado y haz clic en el ícono 🗺️ de mapa.
-3. Se abrirá una vista del mapa mostrando la ubicación actual de la moto asignada.
+7. OTRAS FUNCIONALIDADES:
+   - Inconvenientes: reporta problemas relacionados con pedidos
+   - Fotos: sube evidencias fotográficas
+   - Estadísticas: visualiza gráficos y métricas del sistema
+   - Notificaciones: el sistema notifica sobre nuevos pedidos asignados
+
+ESTRUCTURA DEL SISTEMA:
+- Un pedido (Order) contiene: cliente, menú (que incluye artículo y restaurante), cantidad, precio total, estado, motocicleta opcional
+- Una dirección (Address) está asociada a un pedido
+- Un menú (Menu) conecta un artículo (Product) con un restaurante (Restaurant) y tiene su propio precio
+- Los artículos (Product) son los productos base que se pueden ofrecer
 
 `;
 
@@ -106,40 +113,55 @@ export class ChatbotService {
 
     forkJoin(requests).subscribe({
       next: (results) => {
-        this.backendData = results.map(r =>
-          `Datos de ${r.endpoint}:\n${JSON.stringify(r.data, null, 2)}`
-        ).join('\n\n');
+        const summary = results.map(r => {
+          const data = Array.isArray(r.data) ? r.data : [r.data];
+          const count = data.length;
+          const sample = count > 0 ? data.slice(0, 3) : [];
+          return `${r.endpoint}: ${count} registros${count > 0 ? '. Ejemplos: ' + JSON.stringify(sample) : ''}`;
+        }).join('\n');
+
+        this.backendData = `Resumen del sistema:\n${summary}\n\nPara más detalles, el sistema tiene acceso a todos los datos completos.`;
       },
       error: (error) => {
         console.error('Error al obtener datos del backend:', error);
+        this.backendData = 'No se pudieron cargar los datos del sistema en este momento.';
       }
+    });
+  }
+
+  private async refreshBackendData(): Promise<void> {
+    return new Promise((resolve) => {
+      this.loadBackendData();
+      // Dar tiempo para que se carguen los datos
+      setTimeout(() => resolve(), 500);
     });
   }
 
   async sendMessage(message: string): Promise<string> {
     try {
+      // Recargar datos del backend antes de cada mensaje para tener información actualizada
+      await this.refreshBackendData();
+
       const prompt = `
-Eres un asistente inteligente para la plataforma Flash Food.
-Tu objetivo es guiar al usuario sobre cómo realizar acciones en la plataforma, como crear o editar elementos, o cómo usar ciertas funcionalidades.
+Eres un asistente inteligente y útil para la plataforma de gestión de entregas rápidas.
+Tu objetivo es ayudar a los usuarios a entender cómo usar el sistema y realizar acciones.
 
-**Instrucciones clave para tus respuestas:**
-1.  **Formato:** Responde EXCLUSIVAMENTE con **texto plano**.
-    * NO utilices asteriscos (*), guiones (-), comillas ("), ni ningún otro caracter de formato Markdown.
-    * NO uses emojis. Si los emojis aparecen en la "Base de Conocimiento", ignóralos o descríbelos en texto si es absolutamente necesario (por ejemplo, "el ícono de mapa").
-2.  **Contenido:**
-    * No debes mostrar el contenido literal de la "Información actual del sistema" o "Conocimiento base". Utiliza esta información INTERNAMENTE para formular tu respuesta.
-    * Tu respuesta debe ser una explicación clara y concisa sobre CÓMO hacer algo.
-    * Si la pregunta del usuario es sobre "cómo crear un cliente", tu respuesta debe explicar los pasos para crear un cliente, sin enumerar todos los clientes existentes en el sistema.
+INSTRUCCIONES IMPORTANTES:
+1. Formato: Responde SOLO con texto plano, sin asteriscos, guiones, comillas ni formato Markdown.
+2. No uses emojis en tus respuestas.
+3. Sé claro, conciso y directo.
+4. Si el usuario pregunta sobre datos específicos del sistema, puedes mencionar información relevante de los datos actuales.
+5. Si no sabes algo, admítelo y ofrece ayuda con lo que sí conoces.
 
-**Conocimiento base sobre las funcionalidades de Flash Food:**
+CONOCIMIENTO DEL SISTEMA:
 ${KNOWLEDGE}
 
-**Información actual del sistema (solo para tu contexto, NO la uses en tu respuesta):**
+INFORMACIÓN ACTUAL DEL SISTEMA (usa esta información para responder preguntas específicas):
 ${this.backendData}
 
----
 Pregunta del usuario: ${message}
-Respuesta del asistente (solo texto plano, siguiendo las instrucciones de formato y contenido):
+
+Responde de forma útil y clara:
 `;
 
       const response = await fetch(GEMINI_URL, {
@@ -152,7 +174,7 @@ Respuesta del asistente (solo texto plano, siguiendo las instrucciones de format
 
       const data = await response.json();
       let botReply = data?.candidates?.[0]?.content?.parts?.[0]?.text || 'No pude entender tu mensaje.';
-      
+
       // Aplicar la función de limpieza
       botReply = limpiarTextoRespuesta(botReply);
 

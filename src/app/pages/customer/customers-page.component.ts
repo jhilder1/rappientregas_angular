@@ -25,12 +25,13 @@ import { CustomerProfileComponent } from '../../components/customer/customer-pro
 export class CustomersPageComponent implements OnInit {
   customers: Customer[] = [];
   loggedUser: Customer | null = null;
+  selectedCustomer: Customer | null = null;
 
   constructor(
     private customerService: CustomerService,
     private router: Router,
     private snackBar: MatSnackBar
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loadCustomers();
@@ -68,6 +69,10 @@ export class CustomersPageComponent implements OnInit {
     }
   }
 
+  handleSelectCustomer(customer: Customer): void {
+    this.selectedCustomer = customer;
+  }
+
   handleUpdate(id: string, updateData: Partial<Customer>): void {
     this.customerService.update(id, updateData).subscribe({
       next: (updated) => {
@@ -77,7 +82,12 @@ export class CustomersPageComponent implements OnInit {
           this.customerService.setCustomer(updatedUser);
           this.loggedUser = updatedUser;
         }
+        if (this.selectedCustomer?.id === id) {
+          this.selectedCustomer = updated;
+        }
         this.snackBar.open('Cliente actualizado', 'Cerrar', { duration: 3000 });
+        // Limpiar selección después de actualizar
+        this.selectedCustomer = null;
       },
       error: (error) => {
         console.error('Error updating customer:', error);

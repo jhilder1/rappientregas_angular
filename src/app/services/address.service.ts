@@ -6,21 +6,20 @@ const API_URL = 'http://localhost:5000';
 
 export interface Address {
   id?: string;
+  order_id?: string;
   street: string;
   city: string;
   state: string;
-  zip_code: string;
-  country: string;
-  latitude?: number;
-  longitude?: number;
-  order_id?: string;
+  postal_code: string;
+  additional_info?: string;
+  created_at?: string;
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class AddressService {
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getAll(): Observable<Address[]> {
     return this.http.get<Address[]>(`${API_URL}/addresses`);

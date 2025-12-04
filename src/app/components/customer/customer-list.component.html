@@ -1,10 +1,7 @@
 <div class="customer-list-container">
   <h3 class="list-title">Lista de Clientes</h3>
   <div class="customers-grid">
-    <mat-card 
-      *ngFor="let customer of customers" 
-      [class.logged-user]="isLoggedUser(customer.id)"
-      class="customer-card">
+    <mat-card *ngFor="let customer of customers" [class.logged-user]="isLoggedUser(customer.id)" class="customer-card">
       <mat-card-content>
         <div class="customer-avatar">
           <img *ngIf="customer.photo" [src]="customer.photo" [alt]="customer.name">
@@ -14,8 +11,15 @@
         </div>
         <h4 class="customer-name">{{ customer.name }}</h4>
         <p class="customer-email">{{ customer.email }}</p>
+        <div class="customer-actions">
+          <button mat-icon-button color="primary" (click)="onEdit(customer)" title="Editar">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" (click)="onDelete(customer.id)" title="Eliminar">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
       </mat-card-content>
     </mat-card>
   </div>
 </div>
-

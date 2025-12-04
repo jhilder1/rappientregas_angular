@@ -9,15 +9,20 @@ const API_URL = 'http://localhost:5000';
 export interface Order {
   id?: string;
   customer_id: string;
-  address_id: string;
+  menu_id: string;
+  quantity: number;
   motorcycle_id?: string;
-  status: 'pendiente' | 'en_preparacion' | 'en_camino' | 'entregado' | 'cancelado';
-  total: number;
+  status: 'pending' | 'in_progress' | 'delivered' | 'cancelled';
+  total_price: number;
   created_at?: string;
   customer?: any;
-  address?: any;
+  menu?: any;
   motorcycle?: any;
+  address?: any;
   order_items?: OrderItem[];
+  // Compatibilidad con versiones anteriores
+  total?: number;
+  address_id?: string;
 }
 
 export interface OrderItem {

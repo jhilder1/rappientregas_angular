@@ -15,6 +15,7 @@ import { OrderService, Order } from '../../services/order.service';
 import { MotorcycleService } from '../../services/motorcycle.service';
 import { CustomerService } from '../../services/customer.service';
 import { AddressService } from '../../services/address.service';
+import { MenuService } from '../../services/menu.service';
 import { NotificationService } from '../../services/notification.service';
 
 @Component({
@@ -38,19 +39,21 @@ import { NotificationService } from '../../services/notification.service';
 })
 export class OrdersPageComponent implements OnInit {
   orders: Order[] = [];
-  displayedColumns: string[] = ['id', 'customer', 'status', 'total', 'motorcycle', 'actions'];
+  displayedColumns: string[] = ['id', 'customer', 'menu', 'status', 'total', 'motorcycle', 'actions'];
   formOpen = false;
   orderForm: FormGroup;
   editingOrder: Order | null = null;
   motorcycles: any[] = [];
   customers: any[] = [];
   addresses: any[] = [];
+  menus: any[] = [];
 
   constructor(
     private orderService: OrderService,
     private motorcycleService: MotorcycleService,
     private customerService: CustomerService,
     private addressService: AddressService,
+    private menuService: MenuService,
     private notificationService: NotificationService,
     private router: Router,
     private fb: FormBuilder,
@@ -58,10 +61,10 @@ export class OrdersPageComponent implements OnInit {
   ) {
     this.orderForm = this.fb.group({
       customer_id: ['', Validators.required],
-      address_id: ['', Validators.required],
+      menu_id: ['', Validators.required],
+      quantity: [1, [Validators.required, Validators.min(1)]],
       motorcycle_id: [''],
-      status: ['pendiente', Validators.required],
-      total: [0, [Validators.required, Validators.min(0)]]
+      status: ['pending', Validators.required]
     });
   }
 
@@ -70,6 +73,7 @@ export class OrdersPageComponent implements OnInit {
     this.fetchMotorcycles();
     this.fetchCustomers();
     this.fetchAddresses();
+    this.fetchMenus();
   }
 
   fetchOrders(): void {
@@ -117,6 +121,17 @@ export class OrdersPageComponent implements OnInit {
     });
   }
 
+  fetchMenus(): void {
+    this.menuService.getAll().subscribe({
+      next: (data) => {
+        this.menus = data;
+      },
+      error: (error) => {
+        console.error('Error fetching menus:', error);
+      }
+    });
+  }
+
   handleAdd(): void {
     this.editingOrder = null;
     this.orderForm.reset({
@@ -130,10 +145,10 @@ export class OrdersPageComponent implements OnInit {
     this.editingOrder = order;
     this.orderForm.patchValue({
       customer_id: order.customer_id,
-      address_id: order.address_id,
+      menu_id: this.getOrderMenuId(order) || '',
+      quantity: this.getOrderQuantity(order) || 1,
       motorcycle_id: order.motorcycle_id || '',
-      status: order.status,
-      total: order.total
+      status: order.status
     });
     this.formOpen = true;
   }
@@ -217,6 +232,10 @@ export class OrdersPageComponent implements OnInit {
 
   getStatusColor(status: string): string {
     const colors: { [key: string]: string } = {
+      'pending': 'orange',
+      'in_progress': 'blue',
+      'delivered': 'green',
+      'cancelled': 'red',
       'pendiente': 'orange',
       'en_preparacion': 'blue',
       'en_camino': 'purple',
@@ -224,6 +243,26 @@ export class OrdersPageComponent implements OnInit {
       'cancelado': 'red'
     };
     return colors[status] || 'gray';
+  }
+
+  getMenuProductName(order: Order): string {
+    const orderAny = order as any;
+    return orderAny?.menu?.product?.name || 'N/A';
+  }
+
+  getOrderQuantity(order: Order): number {
+    const orderAny = order as any;
+    return orderAny?.quantity || 0;
+  }
+
+  getOrderTotal(order: Order): number {
+    const orderAny = order as any;
+    return orderAny?.total_price || order.total || 0;
+  }
+
+  getOrderMenuId(order: Order): string {
+    const orderAny = order as any;
+    return orderAny?.menu_id || '';
   }
 }
 
