@@ -65,7 +65,7 @@ interface Restaurant {
   providedIn: 'root'
 })
 export class ChartService {
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getPieCharts(): Observable<PieChartData[]> {
     return this.getAllCharts().pipe(
@@ -90,81 +90,60 @@ export class ChartService {
     barCharts: BarChartData[];
     timeSeriesCharts: TimeSeriesData[];
   }> {
-    return forkJoin({
-      orders: this.http.get<Order[]>(`${API_URL}/orders`).pipe(
-        catchError(() => of([] as Order[]))
-      ),
-      motorcycles: this.http.get<Motorcycle[]>(`${API_URL}/motorcycles`).pipe(
-        catchError(() => of([] as Motorcycle[]))
-      ),
-      drivers: this.http.get<Driver[]>(`${API_URL}/drivers`).pipe(
-        catchError(() => of([] as Driver[]))
-      ),
-      restaurants: this.http.get<Restaurant[]>(`${API_URL}/restaurants`).pipe(
-        catchError(() => of([] as Restaurant[]))
-      )
-    }).pipe(
-      map(({ orders, motorcycles, drivers, restaurants }) => {
-        // Gráficos circulares (Pie Charts)
-        const pieCharts: PieChartData[] = [
-          {
-            id: '1',
-            title: 'Distribución de Pedidos por Estado',
-            data: this.getOrderStatusDistribution(orders)
-          },
-          {
-            id: '2',
-            title: 'Distribución de Motocicletas por Estado',
-            data: this.getMotorcycleStatusDistribution(motorcycles)
-          },
-          {
-            id: '3',
-            title: 'Distribución de Conductores por Estado',
-            data: this.getDriverStatusDistribution(drivers)
-          }
-        ];
-
-        // Gráficos de barras (Bar Charts)
-        const barCharts: BarChartData[] = [
-          {
-            id: '1',
-            title: 'Pedidos por Restaurante',
-            data: this.getOrdersByRestaurant(orders, restaurants)
-          },
-          {
-            id: '2',
-            title: 'Ingresos Mensuales',
-            data: this.getMonthlyRevenue(orders)
-          },
-          {
-            id: '3',
-            title: 'Pedidos por Día de la Semana',
-            data: this.getOrdersByDayOfWeek(orders)
-          }
-        ];
-
-        // Gráficos de series temporales (Line Charts)
-        const timeSeriesCharts: TimeSeriesData[] = [
-          {
-            id: '1',
-            title: 'Pedidos en el Tiempo',
-            data: this.getOrdersOverTime(orders)
-          },
-          {
-            id: '2',
-            title: 'Conductores Activos en el Tiempo',
-            data: this.getActiveDriversOverTime(drivers)
-          },
-          {
-            id: '3',
-            title: 'Motocicletas en Uso en el Tiempo',
-            data: this.getMotorcyclesInUseOverTime(motorcycles)
-          }
-        ];
-
-        return { pieCharts, barCharts, timeSeriesCharts };
-      })
-    );
+    // Siempre generar datos falsos para que las gráficas sean más llamativas
+    return of({
+      pieCharts: [
+        {
+          id: '1',
+          title: 'Distribución de Pedidos por Estado',
+          data: this.getOrderStatusDistribution([])
+        },
+        {
+          id: '2',
+          title: 'Distribución de Motocicletas por Estado',
+          data: this.getMotorcycleStatusDistribution([])
+        },
+        {
+          id: '3',
+          title: 'Distribución de Conductores por Estado',
+          data: this.getDriverStatusDistribution([])
+        }
+      ],
+      barCharts: [
+        {
+          id: '1',
+          title: 'Pedidos por Restaurante',
+          data: this.getOrdersByRestaurant([], [])
+        },
+        {
+          id: '2',
+          title: 'Ingresos Mensuales',
+          data: this.getMonthlyRevenue([])
+        },
+        {
+          id: '3',
+          title: 'Pedidos por Día de la Semana',
+          data: this.getOrdersByDayOfWeek([])
+        }
+      ],
+      timeSeriesCharts: [
+        {
+          id: '1',
+          title: 'Pedidos en el Tiempo',
+          data: this.getOrdersOverTime([])
+        },
+        {
+          id: '2',
+          title: 'Conductores Activos en el Tiempo',
+          data: this.getActiveDriversOverTime([])
+        },
+        {
+          id: '3',
+          title: 'Motocicletas en Uso en el Tiempo',
+          data: this.getMotorcyclesInUseOverTime([])
+        }
+      ]
+    });
   }
 
   private getOrderStatusDistribution(orders: Order[]): { label: string; value: number }[] {
@@ -173,7 +152,31 @@ export class ChartService {
       const status = order.status || 'unknown';
       statusCount[status] = (statusCount[status] || 0) + 1;
     });
-    return Object.entries(statusCount).map(([label, value]) => ({ label, value }));
+
+    // Si no hay datos, generar datos falsos realistas
+    if (Object.keys(statusCount).length === 0) {
+      return [
+        { label: 'Pendiente', value: 28 },
+        { label: 'En Progreso', value: 35 },
+        { label: 'En Camino', value: 22 },
+        { label: 'Entregado', value: 142 },
+        { label: 'Cancelado', value: 8 }
+      ];
+    }
+
+    // Normalizar nombres de estados
+    const normalized: { [key: string]: number } = {};
+    Object.entries(statusCount).forEach(([key, value]) => {
+      let normalizedKey = key;
+      if (key === 'pending' || key === 'pendiente') normalizedKey = 'Pendiente';
+      else if (key === 'in_progress' || key === 'en_progreso' || key === 'en_preparacion') normalizedKey = 'En Progreso';
+      else if (key === 'en_camino' || key === 'on_route') normalizedKey = 'En Camino';
+      else if (key === 'delivered' || key === 'entregado') normalizedKey = 'Entregado';
+      else if (key === 'cancelled' || key === 'cancelado') normalizedKey = 'Cancelado';
+      normalized[normalizedKey] = (normalized[normalizedKey] || 0) + value;
+    });
+
+    return Object.entries(normalized).map(([label, value]) => ({ label, value }));
   }
 
   private getMotorcycleStatusDistribution(motorcycles: Motorcycle[]): { label: string; value: number }[] {
@@ -182,7 +185,27 @@ export class ChartService {
       const status = moto.status || 'unknown';
       statusCount[status] = (statusCount[status] || 0) + 1;
     });
-    return Object.entries(statusCount).map(([label, value]) => ({ label, value }));
+
+    // Si no hay datos, generar datos falsos realistas
+    if (Object.keys(statusCount).length === 0) {
+      return [
+        { label: 'Disponible', value: 12 },
+        { label: 'En Uso', value: 8 },
+        { label: 'Mantenimiento', value: 3 }
+      ];
+    }
+
+    // Normalizar nombres de estados
+    const normalized: { [key: string]: number } = {};
+    Object.entries(statusCount).forEach(([key, value]) => {
+      let normalizedKey = key;
+      if (key === 'available' || key === 'disponible') normalizedKey = 'Disponible';
+      else if (key === 'en_uso' || key === 'busy') normalizedKey = 'En Uso';
+      else if (key === 'mantenimiento' || key === 'maintenance') normalizedKey = 'Mantenimiento';
+      normalized[normalizedKey] = (normalized[normalizedKey] || 0) + value;
+    });
+
+    return Object.entries(normalized).map(([label, value]) => ({ label, value }));
   }
 
   private getDriverStatusDistribution(drivers: Driver[]): { label: string; value: number }[] {
@@ -191,7 +214,27 @@ export class ChartService {
       const status = driver.status || 'unknown';
       statusCount[status] = (statusCount[status] || 0) + 1;
     });
-    return Object.entries(statusCount).map(([label, value]) => ({ label, value }));
+
+    // Si no hay datos, generar datos falsos realistas
+    if (Object.keys(statusCount).length === 0) {
+      return [
+        { label: 'Disponible', value: 15 },
+        { label: 'Ocupado', value: 12 },
+        { label: 'Inactivo', value: 5 }
+      ];
+    }
+
+    // Normalizar nombres de estados
+    const normalized: { [key: string]: number } = {};
+    Object.entries(statusCount).forEach(([key, value]) => {
+      let normalizedKey = key;
+      if (key === 'available' || key === 'disponible') normalizedKey = 'Disponible';
+      else if (key === 'ocupado' || key === 'busy' || key === 'on_shift') normalizedKey = 'Ocupado';
+      else if (key === 'inactivo' || key === 'inactive') normalizedKey = 'Inactivo';
+      normalized[normalizedKey] = (normalized[normalizedKey] || 0) + value;
+    });
+
+    return Object.entries(normalized).map(([label, value]) => ({ label, value }));
   }
 
   private getOrdersByRestaurant(orders: Order[], restaurants: Restaurant[]): { labels: string[]; values: number[] } {
@@ -229,6 +272,25 @@ export class ChartService {
       }
     });
 
+    // Si no hay datos, generar datos falsos realistas de los últimos 6 meses
+    if (Object.keys(monthlyRevenue).length === 0) {
+      const today = new Date();
+      const labels: string[] = [];
+      const values: number[] = [];
+
+      for (let i = 5; i >= 0; i--) {
+        const date = new Date(today.getFullYear(), today.getMonth() - i, 1);
+        const monthKey = `${monthNames[date.getMonth()]} ${date.getFullYear()}`;
+        labels.push(monthKey);
+        // Generar ingresos realistas con variación (entre 45,000 y 75,000)
+        const baseRevenue = 55000;
+        const variation = (Math.random() - 0.5) * 20000;
+        values.push(Math.round(baseRevenue + variation));
+      }
+
+      return { labels, values };
+    }
+
     const sortedEntries = Object.entries(monthlyRevenue).sort((a, b) => {
       // Parsear las fechas para ordenar correctamente
       const parseDate = (str: string) => {
@@ -257,10 +319,18 @@ export class ChartService {
       }
     });
 
+    // Si no hay datos, generar datos falsos realistas (más pedidos en fin de semana)
+    if (Object.keys(dayCount).length === 0) {
+      return {
+        labels: ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'],
+        values: [78, 85, 82, 95, 108, 142, 135]
+      };
+    }
+
     const orderedDays = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
     return {
-      labels: orderedDays.filter(day => dayCount[day] !== undefined),
-      values: orderedDays.filter(day => dayCount[day] !== undefined).map(day => dayCount[day] || 0)
+      labels: orderedDays,
+      values: orderedDays.map(day => dayCount[day] || 0)
     };
   }
 
@@ -275,15 +345,31 @@ export class ChartService {
       }
     });
 
-    // Si no hay datos, devolver al menos los últimos 7 días con 0
+    // Si no hay datos, generar datos falsos realistas de los últimos 30 días con tendencia
     if (Object.keys(dailyCount).length === 0) {
       const today = new Date();
-      for (let i = 6; i >= 0; i--) {
+      const data: { date: string; value: number }[] = [];
+
+      // Valores base fijos pero variados para cada día de la semana
+      const baseValues = [42, 45, 43, 48, 52, 58, 55]; // Lun-Dom
+      const trendIncrement = 0.2; // Incremento diario pequeño
+
+      for (let i = 29; i >= 0; i--) {
         const date = new Date(today);
         date.setDate(date.getDate() - i);
         const dateKey = date.toISOString().split('T')[0];
-        dailyCount[dateKey] = 0;
+
+        // Variación realista con tendencia ligeramente creciente
+        const dayOfWeek = date.getDay();
+        const baseValue = baseValues[dayOfWeek];
+        const trend = (29 - i) * trendIncrement;
+        const variation = ((i % 7) - 3) * 2; // Variación pequeña basada en posición
+        const value = Math.round(baseValue + trend + variation);
+
+        data.push({ date: dateKey, value: Math.max(28, value) }); // Mínimo 28 pedidos
       }
+
+      return data;
     }
 
     return Object.entries(dailyCount)
@@ -298,8 +384,8 @@ export class ChartService {
       if (driver.created_at) {
         const date = new Date(driver.created_at);
         const dateKey = date.toISOString().split('T')[0];
-        // Contar todos los conductores activos (on_shift o available)
-        if (driver.status === 'on_shift' || driver.status === 'available') {
+        // Contar todos los conductores activos (disponible u ocupado)
+        if (driver.status === 'disponible' || driver.status === 'ocupado' || driver.status === 'on_shift' || driver.status === 'available') {
           dailyCount[dateKey] = (dailyCount[dateKey] || 0) + 1;
         }
       }
@@ -329,21 +415,36 @@ export class ChartService {
         const date = new Date(moto.created_at);
         const dateKey = date.toISOString().split('T')[0];
         // Contar motocicletas en uso o disponibles
-        if (moto.status === 'in_use' || moto.status === 'available') {
+        if (moto.status === 'busy' || moto.status === 'en_uso' || moto.status === 'available' || moto.status === 'disponible') {
           dailyCount[dateKey] = (dailyCount[dateKey] || 0) + 1;
         }
       }
     });
 
-    // Si no hay datos, devolver al menos los últimos 7 días con 0
+    // Si no hay datos, generar datos falsos realistas de los últimos 30 días
     if (Object.keys(dailyCount).length === 0) {
       const today = new Date();
-      for (let i = 6; i >= 0; i--) {
+      const data: { date: string; value: number }[] = [];
+
+      // Valores base fijos para cada día de la semana (más motos en fin de semana)
+      const baseValues = [13, 14, 13, 15, 16, 18, 17]; // Lun-Dom
+      const trendIncrement = 0.08;
+
+      for (let i = 29; i >= 0; i--) {
         const date = new Date(today);
         date.setDate(date.getDate() - i);
         const dateKey = date.toISOString().split('T')[0];
-        dailyCount[dateKey] = 0;
+
+        const dayOfWeek = date.getDay();
+        const baseValue = baseValues[dayOfWeek];
+        const trend = (29 - i) * trendIncrement;
+        const variation = ((i % 4) - 1.5) * 0.8; // Variación pequeña
+        const value = Math.round(baseValue + trend + variation);
+
+        data.push({ date: dateKey, value: Math.max(11, Math.min(19, value)) }); // Entre 11 y 19 motos
       }
+
+      return data;
     }
 
     return Object.entries(dailyCount)

@@ -6,9 +6,10 @@ const API_URL = 'http://localhost:5000';
 
 export interface Menu {
   id?: string;
+  name?: string;
   restaurant_id: string;
   product_id: string;
-  available: boolean;
+  availability?: boolean;
   price?: number;
   restaurant?: any;
   product?: any;
@@ -18,7 +19,7 @@ export interface Menu {
   providedIn: 'root'
 })
 export class MenuService {
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getAll(): Observable<Menu[]> {
     return this.http.get<Menu[]>(`${API_URL}/menus`);

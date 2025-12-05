@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
+import { MatIconModule } from '@angular/material/icon';
 import { ChartService, PieChartData, BarChartData, TimeSeriesData } from '../../services/chart.service';
 import { BaseChartDirective } from 'ng2-charts';
 import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
@@ -8,7 +9,7 @@ import { ChartConfiguration, ChartData, ChartType } from 'chart.js';
 @Component({
   selector: 'app-graficos-page',
   standalone: true,
-  imports: [CommonModule, MatCardModule, BaseChartDirective],
+  imports: [CommonModule, MatCardModule, MatIconModule, BaseChartDirective],
   templateUrl: './graficos-page.component.html',
   styleUrls: ['./graficos-page.component.css']
 })
@@ -95,7 +96,7 @@ export class GraficosPageComponent implements OnInit {
   };
   lineChartType: ChartType = 'line';
 
-  constructor(private chartService: ChartService) {}
+  constructor(private chartService: ChartService) { }
 
   ngOnInit(): void {
     this.loadCharts();
@@ -108,8 +109,11 @@ export class GraficosPageComponent implements OnInit {
         this.barCharts = data.barCharts;
         this.timeSeriesCharts = data.timeSeriesCharts;
       },
-      error: (error) => {
-        console.error('Error loading charts:', error);
+      error: () => {
+        // Si hay error, inicializar con arrays vacíos para evitar errores
+        this.pieCharts = [];
+        this.barCharts = [];
+        this.timeSeriesCharts = [];
       }
     });
   }

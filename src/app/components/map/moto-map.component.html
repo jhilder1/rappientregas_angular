@@ -7,17 +7,32 @@
         <span>Placa: {{ plate }}</span>
       </div>
     </div>
-    
+
     <div class="map-container">
-      <div #mapContainer class="map"></div>
+      <div #mapContainer class="map" [style.display]="plate ? 'block' : 'none'"></div>
+      <div *ngIf="!plate" class="no-plate-message">
+        <mat-icon>error_outline</mat-icon>
+        <p>No se ha especificado una placa de motocicleta</p>
+      </div>
     </div>
 
     <div class="info-panel">
-      <p>La ubicación se actualiza automáticamente cada 5 segundos.</p>
-      <p class="note">Nota: Para usar este mapa, necesitas configurar tu API Key de Google Maps en el componente.</p>
+      <p><mat-icon style="vertical-align: middle; margin-right: 8px;">location_on</mat-icon>
+        Seguimiento en tiempo real para placa: <strong>{{ plate || 'Sin placa seleccionada' }}</strong></p>
+
+      <div class="tracking-buttons">
+        <button mat-raised-button color="primary" (click)="iniciarTracking()" [disabled]="!plate">
+          <mat-icon>play_arrow</mat-icon>
+          Iniciar Recorrido
+        </button>
+        <button mat-raised-button color="warn" (click)="detenerTracking()" [disabled]="!plate">
+          <mat-icon>stop</mat-icon>
+          Detener Recorrido
+        </button>
+      </div>
+
+      <p class="note">La ubicación se actualiza automáticamente cada 5 segundos. La línea roja muestra la ruta
+        recorrida.</p>
     </div>
   </mat-card>
 </div>
-
-
-

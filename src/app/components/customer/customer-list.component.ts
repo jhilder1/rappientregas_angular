@@ -22,14 +22,15 @@ export class CustomerListComponent {
     this.edit.emit(customer);
   }
 
-  onDelete(id: string | undefined): void {
+  onDelete(id: string | number | undefined): void {
     if (id) {
-      this.delete.emit(id);
+      this.delete.emit(String(id));
     }
   }
 
-  isLoggedUser(customerId: string | undefined): boolean {
-    return this.loggedUser?.id === customerId;
+  isLoggedUser(customerId: string | number | undefined): boolean {
+    if (!customerId || !this.loggedUser?.id) return false;
+    return String(this.loggedUser.id) === String(customerId);
   }
 }
 

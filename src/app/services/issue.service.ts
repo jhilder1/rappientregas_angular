@@ -5,12 +5,15 @@ import { Observable } from 'rxjs';
 const API_URL = 'http://localhost:5000';
 
 export interface Issue {
-  id?: string;
-  motorcycle_id: string;
-  type: 'accidente' | 'falla_mecanica' | 'pinchazo' | 'otro';
-  description: string;
-  date: string;
-  resolved: boolean;
+  id?: string | number;
+  motorcycle_id: string | number;
+  issue_type?: string;
+  type?: 'accidente' | 'falla_mecanica' | 'pinchazo' | 'otro' | 'accident' | 'breakdown' | 'maintenance';
+  description?: string;
+  date_reported?: string;
+  date?: string;
+  status?: 'open' | 'in_progress' | 'resolved';
+  resolved?: boolean;
   photos?: Photo[];
   motorcycle?: any;
 }
@@ -26,7 +29,7 @@ export interface Photo {
   providedIn: 'root'
 })
 export class IssueService {
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getAll(): Observable<Issue[]> {
     return this.http.get<Issue[]>(`${API_URL}/issues`);

@@ -8,12 +8,12 @@ const API_URL = 'http://localhost:5000';
 
 export interface Order {
   id?: string;
-  customer_id: string;
-  menu_id: string;
+  customer_id: string | number;
+  menu_id: string | number;
   quantity: number;
-  motorcycle_id?: string;
+  motorcycle_id?: string | number | null;
   status: 'pending' | 'in_progress' | 'delivered' | 'cancelled';
-  total_price: number;
+  total_price?: number;
   created_at?: string;
   customer?: any;
   menu?: any;
@@ -56,11 +56,11 @@ export class OrderService {
     return this.http.get<Order>(`${API_URL}/orders/${id}`);
   }
 
-  create(order: Order): Observable<Order> {
+  create(order: Partial<Order>): Observable<Order> {
     return this.http.post<Order>(`${API_URL}/orders`, order);
   }
 
-  update(id: string, order: Order): Observable<Order> {
+  update(id: string, order: Partial<Order>): Observable<Order> {
     return this.http.put<Order>(`${API_URL}/orders/${id}`, order);
   }
 

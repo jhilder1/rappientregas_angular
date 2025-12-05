@@ -99,14 +99,67 @@ th {
 }
 
 td {
-  color: var(--text-secondary);
+  color: #ccc;
   padding: 1rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  white-space: nowrap;
+  vertical-align: middle;
 }
 
 tr:hover {
   background: rgba(102, 126, 234, 0.1);
   transition: background 0.3s ease;
+}
+
+.order-cell {
+  min-width: 180px;
+}
+
+.order-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.motorcycle-cell {
+  min-width: 200px;
+}
+
+.motorcycle-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.moto-icon {
+  font-size: 20px;
+  width: 20px;
+  height: 20px;
+  color: #667eea;
+}
+
+.no-moto {
+  color: rgba(255, 255, 255, 0.4);
+  font-style: italic;
+}
+
+.map-button {
+  margin-left: 0.5rem;
+}
+
+.map-button-small {
+  margin-left: 0.25rem;
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+}
+
+.map-button-small mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
 }
 
 ::ng-deep .mat-mdc-form-field {
@@ -120,4 +173,40 @@ tr:hover {
 
 ::ng-deep .mat-mdc-form-field-input-control {
   color: #fff !important;
+}
+
+.actions-cell {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  justify-content: center;
+}
+
+.actions-cell button {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.actions-cell button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: #fff;
+}
+
+.empty-state mat-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 1rem;
+}
+
+.empty-state p {
+  font-size: 1.2rem;
+  margin-bottom: 2rem;
+  color: rgba(255, 255, 255, 0.7);
 }

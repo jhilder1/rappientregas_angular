@@ -1,0 +1,23 @@
+<div class="page-container">
+  <mat-card>
+    <div class="header-section">
+      <h2>Conductores</h2>
+      <button mat-raised-button color="primary" (click)="handleNew()">
+        <mat-icon>add</mat-icon>
+        Nuevo Conductor
+      </button>
+    </div>
+
+    <div class="driver-layout" *ngIf="showForm">
+      <div class="form-section">
+        <app-driver-form [selected]="selectedDriver" (clear)="handleClear()" (reload)="handleReload()">
+        </app-driver-form>
+      </div>
+    </div>
+
+    <div class="list-section">
+      <app-driver-list-table [drivers]="drivers" (edit)="handleEdit($event)" (delete)="handleDelete($event)">
+      </app-driver-list-table>
+    </div>
+  </mat-card>
+</div>

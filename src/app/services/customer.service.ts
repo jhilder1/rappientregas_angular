@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
 const API_URL = 'http://localhost:5000';
 
 export interface Customer {
-  id?: string;
+  id?: string | number;
   email?: string;
   name?: string;
   phone?: string;
@@ -52,19 +52,19 @@ export class CustomerService {
     return this.http.get<Customer[]>(`${API_URL}/customers`);
   }
 
-  getById(id: string): Observable<Customer> {
+  getById(id: string | number): Observable<Customer> {
     return this.http.get<Customer>(`${API_URL}/customers/${id}`);
   }
 
-  create(customer: Customer): Observable<Customer> {
+  create(customer: Partial<Customer>): Observable<Customer> {
     return this.http.post<Customer>(`${API_URL}/customers`, customer);
   }
 
-  update(id: string, customer: Customer): Observable<Customer> {
+  update(id: string | number, customer: Partial<Customer>): Observable<Customer> {
     return this.http.put<Customer>(`${API_URL}/customers/${id}`, customer);
   }
 
-  delete(id: string): Observable<void> {
+  delete(id: string | number): Observable<void> {
     return this.http.delete<void>(`${API_URL}/customers/${id}`);
   }
 }

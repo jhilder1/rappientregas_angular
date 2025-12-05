@@ -6,7 +6,7 @@ const API_URL = 'http://localhost:5000';
 
 export interface Address {
   id?: string;
-  order_id?: string;
+  order_id?: string | number;
   street: string;
   city: string;
   state: string;
@@ -29,11 +29,11 @@ export class AddressService {
     return this.http.get<Address>(`${API_URL}/addresses/${id}`);
   }
 
-  create(address: Address): Observable<Address> {
+  create(address: Partial<Address>): Observable<Address> {
     return this.http.post<Address>(`${API_URL}/addresses`, address);
   }
 
-  update(id: string, address: Address): Observable<Address> {
+  update(id: string, address: Partial<Address>): Observable<Address> {
     return this.http.put<Address>(`${API_URL}/addresses/${id}`, address);
   }
 

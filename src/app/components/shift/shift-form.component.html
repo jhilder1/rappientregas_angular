@@ -1,0 +1,73 @@
+<mat-card class="form-card">
+  <h3>{{ selected ? 'Editar Jornada' : 'Nueva Jornada' }}</h3>
+  <form [formGroup]="shiftForm" (ngSubmit)="onSubmit()">
+    <mat-form-field appearance="outline">
+      <mat-label>Conductor</mat-label>
+      <mat-select formControlName="driver_id" required>
+        <mat-option *ngFor="let driver of drivers" [value]="driver.id">
+          {{ driver.name }} - {{ driver.license_number }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="shiftForm.get('driver_id')?.hasError('required')">El conductor es obligatorio</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Motocicleta</mat-label>
+      <mat-select formControlName="motorcycle_id" required>
+        <mat-option *ngFor="let moto of motorcycles" [value]="moto.id">
+          {{ moto.license_plate || moto.plate }} - {{ moto.brand }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="shiftForm.get('motorcycle_id')?.hasError('required')">La motocicleta es obligatoria</mat-error>
+    </mat-form-field>
+
+    <div style="display: flex; gap: 1rem;">
+      <mat-form-field appearance="outline" style="flex: 1;">
+        <mat-label>Fecha de Inicio</mat-label>
+        <input matInput [matDatepicker]="picker1" formControlName="start_date" required>
+        <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+        <mat-datepicker #picker1></mat-datepicker>
+        <mat-error *ngIf="shiftForm.get('start_date')?.hasError('required')">La fecha de inicio es obligatoria</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" style="flex: 1;">
+        <mat-label>Hora de Inicio</mat-label>
+        <input matInput type="time" formControlName="start_time" required>
+        <mat-error *ngIf="shiftForm.get('start_time')?.hasError('required')">La hora de inicio es obligatoria</mat-error>
+      </mat-form-field>
+    </div>
+
+    <div style="display: flex; gap: 1rem;">
+      <mat-form-field appearance="outline" style="flex: 1;">
+        <mat-label>Fecha de Fin</mat-label>
+        <input matInput [matDatepicker]="picker2" formControlName="end_date">
+        <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+        <mat-datepicker #picker2></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" style="flex: 1;">
+        <mat-label>Hora de Fin</mat-label>
+        <input matInput type="time" formControlName="end_time">
+      </mat-form-field>
+    </div>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Estado</mat-label>
+      <mat-select formControlName="status" required>
+        <mat-option value="active">Activo</mat-option>
+        <mat-option value="completed">Completado</mat-option>
+        <mat-option value="cancelled">Cancelado</mat-option>
+      </mat-select>
+      <mat-error *ngIf="shiftForm.get('status')?.hasError('required')">El estado es obligatorio</mat-error>
+    </mat-form-field>
+
+    <div class="form-actions">
+      <button mat-raised-button type="submit" color="primary" [disabled]="!shiftForm.valid">
+        {{ selected ? 'Actualizar' : 'Crear' }}
+      </button>
+      <button mat-button type="button" (click)="onClear()">
+        Cancelar
+      </button>
+    </div>
+  </form>
+</mat-card>

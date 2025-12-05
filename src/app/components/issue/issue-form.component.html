@@ -1,0 +1,60 @@
+<mat-card class="form-card">
+  <h3>{{ selected ? 'Editar Inconveniente' : 'Nuevo Inconveniente' }}</h3>
+  <form [formGroup]="issueForm" (ngSubmit)="onSubmit()">
+    <mat-form-field appearance="outline">
+      <mat-label>Motocicleta</mat-label>
+      <mat-select formControlName="motorcycle_id" required>
+        <mat-option *ngFor="let moto of motorcycles" [value]="moto.id">
+          {{ moto.license_plate || moto.plate }} - {{ moto.brand }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="issueForm.get('motorcycle_id')?.hasError('required')">La motocicleta es obligatoria</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Tipo de Inconveniente</mat-label>
+      <mat-select formControlName="issue_type" required>
+        <mat-option value="accident">Accidente</mat-option>
+        <mat-option value="breakdown">Falla Mecánica</mat-option>
+        <mat-option value="maintenance">Mantenimiento</mat-option>
+        <mat-option value="pinchazo">Pinchazo</mat-option>
+        <mat-option value="otro">Otro</mat-option>
+      </mat-select>
+      <mat-error *ngIf="issueForm.get('issue_type')?.hasError('required')">El tipo es obligatorio</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Descripción</mat-label>
+      <textarea matInput formControlName="description" rows="4" required></textarea>
+      <mat-error *ngIf="issueForm.get('description')?.hasError('required')">La descripción es obligatoria</mat-error>
+      <mat-error *ngIf="issueForm.get('description')?.hasError('minlength')">Mínimo 10 caracteres</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Fecha de Reporte</mat-label>
+      <input matInput [matDatepicker]="picker" formControlName="date_reported" required>
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+      <mat-error *ngIf="issueForm.get('date_reported')?.hasError('required')">La fecha es obligatoria</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Estado</mat-label>
+      <mat-select formControlName="status" required>
+        <mat-option value="open">Abierto</mat-option>
+        <mat-option value="in_progress">En Progreso</mat-option>
+        <mat-option value="resolved">Resuelto</mat-option>
+      </mat-select>
+      <mat-error *ngIf="issueForm.get('status')?.hasError('required')">El estado es obligatorio</mat-error>
+    </mat-form-field>
+
+    <div class="form-actions">
+      <button mat-raised-button type="submit" color="primary" [disabled]="!issueForm.valid">
+        {{ selected ? 'Actualizar' : 'Crear' }}
+      </button>
+      <button mat-button type="button" (click)="onClear()">
+        Cancelar
+      </button>
+    </div>
+  </form>
+</mat-card>

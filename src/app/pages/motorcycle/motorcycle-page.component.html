@@ -1,31 +1,25 @@
 <div class="motorcycle-page-container">
   <mat-card class="motorcycle-card">
+    <div class="header-section" style="margin-bottom: 1rem;">
+      <h2>Vehículos y Motocicletas</h2>
+    </div>
     <div class="motorcycle-layout">
       <!-- Formulario -->
       <div class="form-section">
-        <app-motorcycle-form
-          [selected]="selectedMoto"
-          (clear)="handleClear()"
-          (reload)="loadMotorcycles()">
+        <app-motorcycle-form [selected]="selectedMoto" (clear)="handleClear()" (reload)="loadMotorcycles()">
         </app-motorcycle-form>
       </div>
 
       <!-- Lista -->
       <div class="list-section">
-        <app-motorcycle-list
-          [motorcycles]="motorcycles"
-          (edit)="handleEdit($event)"
+        <app-motorcycle-list [motorcycles]="motorcycles" (edit)="handleEdit($event)"
           (assignZone)="handleAssignZone($event)">
         </app-motorcycle-list>
       </div>
     </div>
   </mat-card>
 
-  <app-zones-modal
-    [open]="zonesModalOpen"
-    [moto]="selectedMotoForZone"
-    (close)="handleZoneClose()"
+  <app-zones-modal [open]="zonesModalOpen" [moto]="selectedMotoForZone" (close)="handleZoneClose()"
     (save)="handleZoneSave()">
   </app-zones-modal>
 </div>
-

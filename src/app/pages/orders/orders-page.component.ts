@@ -11,12 +11,14 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { OrderService, Order } from '../../services/order.service';
 import { MotorcycleService } from '../../services/motorcycle.service';
 import { CustomerService } from '../../services/customer.service';
 import { AddressService } from '../../services/address.service';
 import { MenuService } from '../../services/menu.service';
 import { NotificationService } from '../../services/notification.service';
+import { ShiftService } from '../../services/shift.service';
 
 @Component({
   selector: 'app-orders-page',
@@ -44,6 +46,8 @@ export class OrdersPageComponent implements OnInit {
   orderForm: FormGroup;
   editingOrder: Order | null = null;
   motorcycles: any[] = [];
+  availableMotorcycles: any[] = [];
+  activeShifts: any[] = [];
   customers: any[] = [];
   addresses: any[] = [];
   menus: any[] = [];
@@ -55,6 +59,7 @@ export class OrdersPageComponent implements OnInit {
     private addressService: AddressService,
     private menuService: MenuService,
     private notificationService: NotificationService,
+    private shiftService: ShiftService,
     private router: Router,
     private fb: FormBuilder,
     private snackBar: MatSnackBar
@@ -71,6 +76,7 @@ export class OrdersPageComponent implements OnInit {
   ngOnInit(): void {
     this.fetchOrders();
     this.fetchMotorcycles();
+    this.fetchActiveShifts();
     this.fetchCustomers();
     this.fetchAddresses();
     this.fetchMenus();
@@ -92,11 +98,39 @@ export class OrdersPageComponent implements OnInit {
     this.motorcycleService.getAll().subscribe({
       next: (data) => {
         this.motorcycles = data;
+        this.updateAvailableMotorcycles();
       },
       error: (error) => {
         console.error('Error fetching motorcycles:', error);
       }
     });
+  }
+
+  fetchActiveShifts(): void {
+    this.shiftService.getActiveShifts().subscribe({
+      next: (data) => {
+        this.activeShifts = data;
+        this.updateAvailableMotorcycles();
+      },
+      error: (error) => {
+        console.error('Error fetching active shifts:', error);
+        // Si falla, cargar todas las motocicletas
+        this.availableMotorcycles = this.motorcycles;
+      }
+    });
+  }
+
+  updateAvailableMotorcycles(): void {
+    if (this.activeShifts.length > 0) {
+      // Filtrar motocicletas que tienen turnos activos
+      const activeMotorcycleIds = this.activeShifts.map(shift => String(shift.motorcycle_id));
+      this.availableMotorcycles = this.motorcycles.filter(moto =>
+        activeMotorcycleIds.includes(String(moto.id))
+      );
+    } else {
+      // Si no hay turnos activos, mostrar todas las motocicletas
+      this.availableMotorcycles = this.motorcycles;
+    }
   }
 
   fetchCustomers(): void {
@@ -124,7 +158,8 @@ export class OrdersPageComponent implements OnInit {
   fetchMenus(): void {
     this.menuService.getAll().subscribe({
       next: (data) => {
-        this.menus = data;
+        // Filtrar solo menús disponibles
+        this.menus = data.filter(menu => menu.availability !== false);
       },
       error: (error) => {
         console.error('Error fetching menus:', error);
@@ -135,27 +170,32 @@ export class OrdersPageComponent implements OnInit {
   handleAdd(): void {
     this.editingOrder = null;
     this.orderForm.reset({
-      status: 'pendiente',
-      total: 0
+      customer_id: '',
+      menu_id: '',
+      quantity: 1,
+      motorcycle_id: '',
+      status: 'pending'
     });
     this.formOpen = true;
   }
 
   handleEdit(order: Order): void {
     this.editingOrder = order;
+    const orderAny = order as any;
     this.orderForm.patchValue({
-      customer_id: order.customer_id,
-      menu_id: this.getOrderMenuId(order) || '',
+      customer_id: String(order.customer_id),
+      menu_id: String(this.getOrderMenuId(order) || orderAny?.menu_id || ''),
       quantity: this.getOrderQuantity(order) || 1,
-      motorcycle_id: order.motorcycle_id || '',
+      motorcycle_id: order.motorcycle_id ? String(order.motorcycle_id) : '',
       status: order.status
     });
     this.formOpen = true;
   }
 
-  handleDelete(id: string): void {
+  handleDelete(id: string | number): void {
     if (confirm('¿Está seguro de eliminar esta orden?')) {
-      this.orderService.delete(id).subscribe({
+      const orderId = String(id);
+      this.orderService.delete(orderId).subscribe({
         next: () => {
           this.fetchOrders();
           this.snackBar.open('Orden eliminada', 'Cerrar', { duration: 3000 });
@@ -170,7 +210,9 @@ export class OrdersPageComponent implements OnInit {
 
   handleAssign(order: Order): void {
     if (order.motorcycle_id) {
-      this.orderService.assignToMotorcycle(order.id!, order.motorcycle_id).subscribe({
+      const orderId = order.id ? String(order.id) : '';
+      const motorcycleId = String(order.motorcycle_id);
+      this.orderService.assignToMotorcycle(orderId, motorcycleId).subscribe({
         next: () => {
           this.fetchOrders();
           this.notificationService.addNotification({
@@ -189,32 +231,66 @@ export class OrdersPageComponent implements OnInit {
 
   handleSubmit(): void {
     if (this.orderForm.valid) {
-      const data = this.orderForm.value;
+      const formValue = this.orderForm.value;
+      const data = {
+        customer_id: parseInt(formValue.customer_id),
+        menu_id: parseInt(formValue.menu_id),
+        quantity: parseInt(formValue.quantity),
+        status: formValue.status,
+        motorcycle_id: formValue.motorcycle_id ? parseInt(formValue.motorcycle_id) : null
+      };
+
+      console.log('Enviando datos del pedido:', data);
+
       if (this.editingOrder?.id) {
-        this.orderService.update(this.editingOrder.id, data).subscribe({
+        const orderId = String(this.editingOrder.id);
+        this.orderService.update(orderId, data).subscribe({
           next: () => {
+            const cliente = this.customers.find(c => c.id === data.customer_id);
+            this.notificationService.addNotification({
+              tipo: 'actualizado',
+              mensaje: `Pedido #${this.editingOrder?.id} actualizado`,
+              cliente: cliente?.name || 'Desconocido',
+              estado: data.status || 'N/A'
+            });
             this.fetchOrders();
             this.formOpen = false;
             this.snackBar.open('Orden actualizada', 'Cerrar', { duration: 3000 });
           },
           error: (error) => {
             console.error('Error updating order:', error);
-            this.snackBar.open('Error al actualizar orden', 'Cerrar', { duration: 3000 });
+            const errorMsg = error?.error?.message || error?.message || 'Error desconocido';
+            this.snackBar.open(`Error al actualizar orden: ${errorMsg}`, 'Cerrar', { duration: 5000 });
           }
         });
       } else {
         this.orderService.create(data).subscribe({
-          next: () => {
+          next: (response) => {
+            console.log('Pedido creado exitosamente:', response);
+            const cliente = this.customers.find(c => c.id === data.customer_id);
+            const orderId = (response as any)?.id || response?.id || 'N/A';
+            this.notificationService.addNotification({
+              tipo: 'nuevo',
+              mensaje: `Nuevo pedido #${orderId} creado`,
+              cliente: cliente?.name || 'Desconocido',
+              estado: data.status || 'N/A',
+              fecha: new Date().toISOString()
+            });
             this.fetchOrders();
             this.formOpen = false;
-            this.snackBar.open('Orden creada', 'Cerrar', { duration: 3000 });
+            this.snackBar.open('Orden creada exitosamente', 'Cerrar', { duration: 3000 });
           },
           error: (error) => {
             console.error('Error creating order:', error);
-            this.snackBar.open('Error al crear orden', 'Cerrar', { duration: 3000 });
+            const errorMsg = error?.error?.message || error?.error?.error || error?.message || 'Error desconocido';
+            this.snackBar.open(`Error al crear orden: ${errorMsg}`, 'Cerrar', { duration: 5000 });
           }
         });
       }
+    } else {
+      console.log('Formulario inválido:', this.orderForm.errors);
+      console.log('Valores del formulario:', this.orderForm.value);
+      this.snackBar.open('Por favor completa todos los campos requeridos', 'Cerrar', { duration: 3000 });
     }
   }
 
@@ -224,11 +300,6 @@ export class OrdersPageComponent implements OnInit {
     this.orderForm.reset();
   }
 
-  viewMap(plate: string): void {
-    if (plate) {
-      this.router.navigate(['/mapa-moto', plate]);
-    }
-  }
 
   getStatusColor(status: string): string {
     const colors: { [key: string]: string } = {
@@ -245,8 +316,27 @@ export class OrdersPageComponent implements OnInit {
     return colors[status] || 'gray';
   }
 
+  getStatusLabel(status: string): string {
+    const labels: { [key: string]: string } = {
+      'pending': 'Pendiente',
+      'in_progress': 'En Progreso',
+      'delivered': 'Entregado',
+      'cancelled': 'Cancelado',
+      'pendiente': 'Pendiente',
+      'en_preparacion': 'En Preparación',
+      'en_camino': 'En Camino',
+      'entregado': 'Entregado',
+      'cancelado': 'Cancelado'
+    };
+    return labels[status] || status;
+  }
+
   getMenuProductName(order: Order): string {
     const orderAny = order as any;
+    // Priorizar el nombre del menú, luego el nombre del producto
+    if (orderAny?.menu?.name) {
+      return orderAny.menu.name;
+    }
     return orderAny?.menu?.product?.name || 'N/A';
   }
 
@@ -263,6 +353,55 @@ export class OrdersPageComponent implements OnInit {
   getOrderMenuId(order: Order): string {
     const orderAny = order as any;
     return orderAny?.menu_id || '';
+  }
+
+  getOrderId(orderId: string | number | undefined): string {
+    if (!orderId) return '';
+    return String(orderId);
+  }
+
+  getOrderIdDisplay(orderId: string | number | undefined): string {
+    if (!orderId) return 'N/A';
+    const idStr = String(orderId);
+    return idStr.length > 8 ? idStr.substring(0, 8) : idStr;
+  }
+
+  getMotorcycleInfo(order: Order): string {
+    const orderAny = order as any;
+    if (orderAny?.motorcycle?.plate) {
+      return orderAny.motorcycle.plate;
+    }
+    if (orderAny?.motorcycle?.license_plate) {
+      return orderAny.motorcycle.license_plate;
+    }
+    if (order.motorcycle_id) {
+      const moto = this.motorcycles.find(m => String(m.id) === String(order.motorcycle_id));
+      if (moto) {
+        return moto.plate || moto.license_plate || String(moto.id);
+      }
+    }
+    return '';
+  }
+
+  getMotorcyclePlate(order: Order): string {
+    const orderAny = order as any;
+    if (orderAny?.motorcycle?.plate) {
+      return orderAny.motorcycle.plate;
+    }
+    if (orderAny?.motorcycle?.license_plate) {
+      return orderAny.motorcycle.license_plate;
+    }
+    if (order.motorcycle_id) {
+      const moto = this.motorcycles.find(m => String(m.id) === String(order.motorcycle_id));
+      if (moto) {
+        return moto.plate || moto.license_plate || '';
+      }
+    }
+    return '';
+  }
+
+  hasMotorcycle(order: Order): boolean {
+    return !!this.getMotorcycleInfo(order);
   }
 }
 

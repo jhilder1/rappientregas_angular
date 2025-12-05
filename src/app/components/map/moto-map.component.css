@@ -56,10 +56,43 @@ mat-card {
   color: #ccc;
 }
 
+.tracking-buttons {
+  display: flex;
+  gap: 1rem;
+  margin: 1rem 0;
+  flex-wrap: wrap;
+}
+
+.tracking-buttons button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .note {
   font-size: 0.9rem;
   color: #888;
   font-style: italic;
+  margin-top: 1rem;
+}
+
+.no-plate-message {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #888;
+  text-align: center;
+  padding: 2rem;
+}
+
+.no-plate-message mat-icon {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  margin-bottom: 1rem;
+  color: #ff6b6b;
 }
 
 @media (max-width: 768px) {
@@ -68,11 +101,8 @@ mat-card {
     align-items: flex-start;
     gap: 1rem;
   }
-  
+
   .map-container {
     height: 400px;
   }
 }
-
-
-

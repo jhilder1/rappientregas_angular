@@ -1,0 +1,24 @@
+<div class="page-container">
+  <mat-card>
+    <div class="header-section">
+      <h2>Problemas y Inconvenientes</h2>
+      <button mat-raised-button color="primary" (click)="handleNew()">
+        <mat-icon>add</mat-icon>
+        Nuevo Inconveniente
+      </button>
+    </div>
+
+    <div class="issue-layout" *ngIf="showForm">
+      <div class="form-section">
+        <app-issue-form [selected]="selectedIssue" [motorcycles]="motorcycles" (clear)="handleClear()"
+          (reload)="handleReload()">
+        </app-issue-form>
+      </div>
+    </div>
+
+    <div class="list-section">
+      <app-issue-list-table [issues]="issues" (edit)="handleEdit($event)" (delete)="handleDelete($event)">
+      </app-issue-list-table>
+    </div>
+  </mat-card>
+</div>

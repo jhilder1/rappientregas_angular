@@ -5,12 +5,12 @@ import { Observable } from 'rxjs';
 const API_URL = 'http://localhost:5000';
 
 export interface Shift {
-  id?: string;
-  driver_id: string;
-  motorcycle_id: string;
+  id?: string | number;
+  driver_id: string | number;
+  motorcycle_id: string | number;
   start_time: string;
   end_time?: string;
-  status: 'activo' | 'finalizado';
+  status?: 'active' | 'completed' | 'cancelled' | 'activo' | 'finalizado';
   driver?: any;
   motorcycle?: any;
 }
@@ -19,25 +19,25 @@ export interface Shift {
   providedIn: 'root'
 })
 export class ShiftService {
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getAll(): Observable<Shift[]> {
     return this.http.get<Shift[]>(`${API_URL}/shifts`);
   }
 
-  getById(id: string): Observable<Shift> {
+  getById(id: string | number): Observable<Shift> {
     return this.http.get<Shift>(`${API_URL}/shifts/${id}`);
   }
 
-  create(shift: Shift): Observable<Shift> {
+  create(shift: Partial<Shift>): Observable<Shift> {
     return this.http.post<Shift>(`${API_URL}/shifts`, shift);
   }
 
-  update(id: string, shift: Shift): Observable<Shift> {
+  update(id: string | number, shift: Partial<Shift>): Observable<Shift> {
     return this.http.put<Shift>(`${API_URL}/shifts/${id}`, shift);
   }
 
-  delete(id: string): Observable<void> {
+  delete(id: string | number): Observable<void> {
     return this.http.delete<void>(`${API_URL}/shifts/${id}`);
   }
 

@@ -21,7 +21,7 @@ export interface Motorcycle {
   providedIn: 'root'
 })
 export class MotorcycleService {
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getAll(): Observable<Motorcycle[]> {
     return this.http.get<Motorcycle[]>(`${API_URL}/motorcycles`);
@@ -32,11 +32,30 @@ export class MotorcycleService {
   }
 
   getByPlate(plate: string): Observable<Motorcycle> {
-    return this.http.get<Motorcycle>(`${API_URL}/motorcycles/plate/${plate}`);
+    // Como el backend no tiene esta ruta, buscamos en la lista completa
+    return new Observable(observer => {
+      this.getAll().subscribe({
+        next: (motorcycles) => {
+          const motorcycle = motorcycles.find(m =>
+            (m.plate && m.plate.toLowerCase() === plate.toLowerCase()) ||
+            (m.license_plate && m.license_plate.toLowerCase() === plate.toLowerCase())
+          );
+          if (motorcycle) {
+            observer.next(motorcycle);
+            observer.complete();
+          } else {
+            observer.error({ status: 404, message: 'Motocicleta no encontrada' });
+          }
+        },
+        error: (error) => {
+          observer.error(error);
+        }
+      });
+    });
   }
 
   getByLicensePlate(licensePlate: string): Observable<Motorcycle> {
-    return this.http.get<Motorcycle>(`${API_URL}/motorcycles/plate/${licensePlate}`);
+    return this.getByPlate(licensePlate);
   }
 
   create(motorcycle: Motorcycle): Observable<Motorcycle> {
@@ -56,6 +75,14 @@ export class MotorcycleService {
       latitude,
       longitude
     });
+  }
+
+  startTracking(plate: string): Observable<any> {
+    return this.http.post(`${API_URL}/motorcycles/track/${plate}`, {});
+  }
+
+  stopTracking(plate: string): Observable<any> {
+    return this.http.post(`${API_URL}/motorcycles/stop/${plate}`, {});
   }
 }
 

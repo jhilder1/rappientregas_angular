@@ -1,0 +1,53 @@
+<mat-card class="form-card">
+  <h3>{{ selected ? 'Editar Conductor' : 'Nuevo Conductor' }}</h3>
+  <form [formGroup]="driverForm" (ngSubmit)="onSubmit()">
+    <mat-form-field appearance="outline">
+      <mat-label>Nombre</mat-label>
+      <input matInput formControlName="name" required>
+      <mat-error *ngIf="driverForm.get('name')?.hasError('required')">El nombre es obligatorio</mat-error>
+      <mat-error *ngIf="driverForm.get('name')?.hasError('minlength')">Mínimo 2 caracteres</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Email</mat-label>
+      <input matInput type="email" formControlName="email" required>
+      <mat-error *ngIf="driverForm.get('email')?.hasError('required')">El email es obligatorio</mat-error>
+      <mat-error *ngIf="driverForm.get('email')?.hasError('email')">Email inválido</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Teléfono</mat-label>
+      <input matInput formControlName="phone" required>
+      <mat-error *ngIf="driverForm.get('phone')?.hasError('required')">El teléfono es obligatorio</mat-error>
+      <mat-error *ngIf="driverForm.get('phone')?.hasError('pattern')">Solo números</mat-error>
+      <mat-error *ngIf="driverForm.get('phone')?.hasError('minlength')">Mínimo 10 dígitos</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Número de Licencia</mat-label>
+      <input matInput formControlName="license_number" required>
+      <mat-error *ngIf="driverForm.get('license_number')?.hasError('required')">El número de licencia es
+        obligatorio</mat-error>
+      <mat-error *ngIf="driverForm.get('license_number')?.hasError('minlength')">Mínimo 5 caracteres</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Estado</mat-label>
+      <mat-select formControlName="status" required>
+        <mat-option value="disponible">Disponible</mat-option>
+        <mat-option value="ocupado">Ocupado</mat-option>
+        <mat-option value="inactivo">Inactivo</mat-option>
+      </mat-select>
+      <mat-error *ngIf="driverForm.get('status')?.hasError('required')">El estado es obligatorio</mat-error>
+    </mat-form-field>
+
+    <div class="form-actions">
+      <button mat-raised-button type="submit" color="primary" [disabled]="!driverForm.valid">
+        {{ selected ? 'Actualizar' : 'Crear' }}
+      </button>
+      <button mat-button type="button" (click)="onClear()">
+        Cancelar
+      </button>
+    </div>
+  </form>
+</mat-card>

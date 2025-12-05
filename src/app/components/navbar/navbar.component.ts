@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -16,13 +16,14 @@ import { Customer } from '../../services/customer.service';
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css']
 })
-export class NavbarComponent implements OnInit {
+export class NavbarComponent implements OnInit, OnDestroy {
   customer$: Observable<Customer | null>;
   open = false;
   openConductores = false;
   openAdmin = false;
   openLocales = false;
   currentPath = '';
+  private clickListener?: () => void;
 
   constructor(
     private router: Router,
@@ -38,6 +39,22 @@ export class NavbarComponent implements OnInit {
       this.currentPath = this.router.url;
     });
     this.currentPath = this.router.url;
+
+    // Cerrar menús al hacer clic fuera
+    this.clickListener = () => {
+      if (this.openAdmin || this.openConductores || this.openLocales) {
+        this.closeMenus();
+      }
+    };
+    setTimeout(() => {
+      document.addEventListener('click', this.clickListener!);
+    }, 0);
+  }
+
+  ngOnDestroy(): void {
+    if (this.clickListener) {
+      document.removeEventListener('click', this.clickListener);
+    }
   }
 
   shouldShowNavbar(): boolean {
@@ -52,19 +69,28 @@ export class NavbarComponent implements OnInit {
     this.open = !this.open;
   }
 
-  toggleConductores(): void {
+  toggleConductores(event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
     this.openConductores = !this.openConductores;
     this.openAdmin = false;
     this.openLocales = false;
   }
 
-  toggleAdmin(): void {
+  toggleAdmin(event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
     this.openAdmin = !this.openAdmin;
     this.openConductores = false;
     this.openLocales = false;
   }
 
-  toggleLocales(): void {
+  toggleLocales(event?: Event): void {
+    if (event) {
+      event.stopPropagation();
+    }
     this.openLocales = !this.openLocales;
     this.openConductores = false;
     this.openAdmin = false;
@@ -75,6 +101,10 @@ export class NavbarComponent implements OnInit {
     this.openConductores = false;
     this.openAdmin = false;
     this.openLocales = false;
+  }
+
+  onDropdownClick(event: Event): void {
+    event.stopPropagation();
   }
 }
 

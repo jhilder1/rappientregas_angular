@@ -10,11 +10,21 @@
 
       <!-- Perfil y edición -->
       <div class="profile-section">
-        <h2 class="profile-title">{{ selectedCustomer ? 'Editar Usuario' : 'Mi Perfil' }}</h2>
-        <app-customer-profile [user]="selectedCustomer || loggedUser"
-          (update)="handleUpdate((selectedCustomer || loggedUser)?.id || '', $event)">
+        <div class="profile-header">
+          <h2 class="profile-title">{{ selectedCustomer ? 'Editar Usuario' : (isCreatingNew ? 'Nuevo Usuario' : 'Mi
+            Perfil') }}</h2>
+          <button *ngIf="!selectedCustomer && !isCreatingNew" mat-raised-button color="primary"
+            (click)="handleCreateNew()">
+            <mat-icon>add</mat-icon>
+            Nuevo Usuario
+          </button>
+        </div>
+        <app-customer-profile [user]="selectedCustomer || (isCreatingNew ? null : loggedUser)"
+          [isNewUser]="isCreatingNew" (update)="handleUpdate((selectedCustomer || loggedUser)?.id, $event)"
+          (create)="handleCreate($event)">
         </app-customer-profile>
-        <button mat-raised-button color="primary" (click)="navigateToOrders()" class="continue-button">
+        <button *ngIf="!isCreatingNew" mat-raised-button color="primary" (click)="navigateToOrders()"
+          class="continue-button">
           Continuar a pedidos
         </button>
       </div>

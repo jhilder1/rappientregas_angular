@@ -1,0 +1,24 @@
+<div class="page-container">
+  <mat-card>
+    <div class="header-section">
+      <h2>Jornadas de Trabajo</h2>
+      <button mat-raised-button color="primary" (click)="handleNew()">
+        <mat-icon>add</mat-icon>
+        Nueva Jornada
+      </button>
+    </div>
+
+    <div class="shift-layout" *ngIf="showForm">
+      <div class="form-section">
+        <app-shift-form [selected]="selectedShift" [drivers]="drivers" [motorcycles]="motorcycles"
+          (clear)="handleClear()" (reload)="handleReload()">
+        </app-shift-form>
+      </div>
+    </div>
+
+    <div class="list-section">
+      <app-shift-list-table [shifts]="shifts" (edit)="handleEdit($event)" (delete)="handleDelete($event)">
+      </app-shift-list-table>
+    </div>
+  </mat-card>
+</div>
