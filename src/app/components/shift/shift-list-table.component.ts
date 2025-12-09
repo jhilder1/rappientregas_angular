@@ -84,3 +84,4 @@ export class ShiftListTableComponent {
     return id ? String(id) : '';
   }
 }
+

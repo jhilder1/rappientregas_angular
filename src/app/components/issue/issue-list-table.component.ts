@@ -90,3 +90,4 @@ export class IssueListTableComponent {
     return id ? String(id) : '';
   }
 }
+

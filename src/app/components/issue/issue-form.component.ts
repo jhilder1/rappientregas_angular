@@ -133,3 +133,4 @@ export class IssueFormComponent implements OnInit, OnChanges {
     this.clear.emit();
   }
 }
+
